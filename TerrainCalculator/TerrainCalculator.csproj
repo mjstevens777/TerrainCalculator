@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C0D6B510-90DD-4083-990F-C8ADAEC72CB3}</ProjectGuid>
+    <ProjectGuid>{548C7799-21F6-48A8-B7EC-3E1B991BB2E9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TerrainCalculator</RootNamespace>
