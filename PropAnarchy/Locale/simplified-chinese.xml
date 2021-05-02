@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Language UniqueName="zh-cn" ReadableName="正體中文" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Translations>
+    <Translation ID="PTA_DESCRIPTION" String="让玩家不受限制地放置摆件和植物" />
+    <!-- OPTIONS -->
+    <Translation ID="PTA_OPTION_NO_UI" String="不显示状态栏" />
+    <Translation ID="PTA_OPTION_UNHIDE_PROPS" String="重新读档不隐藏所有摆件" />
+    <Translation ID="PTA_OPTION_UNHIDE_TREES" String="重新读档不隐藏所有植物" />
+    <Translation ID="PTA_OPTION_ALWAYS_ON" String="无碰撞功能始终开启" />
+    <Translation ID="PTA_OPTION_DEFAULT_ON" String="无碰撞功能默认开启（无碰撞功能始终开启时忽略此选项）" />
+    <Translation ID="PTA_OPTION_COMBO" String="无碰撞启用/关闭热键(无碰撞功能始终开启时忽略此选项)" />
+    <!-- UI -->
+    <Translation ID="PTA_ON" String="摆件及植物无碰撞功能：开" />
+    <Translation ID="PTA_OFF" String="摆件及植物无碰撞功能：关" />
+  </Translations>
+</Language>
