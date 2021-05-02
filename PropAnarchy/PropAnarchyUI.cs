@@ -6,9 +6,9 @@ namespace TerrainCalculator
 {
     public class PropAnarchyUI : MonoBehaviour
     {
-        private static string On => Mod.translation.GetTranslation("PTA_ON");
+        private static string On => Mod.translation.GetTranslation("TC_ON");
 
-        private static string Off => Mod.translation.GetTranslation("PTA_OFF");
+        private static string Off => Mod.translation.GetTranslation("TC_OFF");
 
         private UILabel _label;
 

@@ -14,22 +14,22 @@ namespace TerrainCalculator
             keyCombo = 0;
         }
 
-        [Checkbox("PTA_OPTION_NO_UI")]
+        [Checkbox("TC_OPTION_NO_UI")]
         public bool noUi { set; get; }
 
-        [Checkbox("PTA_OPTION_UNHIDE_PROPS")]
+        [Checkbox("TC_OPTION_UNHIDE_PROPS")]
         public bool unhideAllPropsOnLevelLoading { set; get; }
 
-        [Checkbox("PTA_OPTION_UNHIDE_TREES")]
+        [Checkbox("TC_OPTION_UNHIDE_TREES")]
         public bool unhideAllTreesOnLevelLoading { set; get; }
 
-        [Checkbox("PTA_OPTION_ALWAYS_ON")]
+        [Checkbox("TC_OPTION_ALWAYS_ON")]
         public bool anarchyAlwaysOn { set; get; }
 
-        [Checkbox("PTA_OPTION_DEFAULT_ON")]
+        [Checkbox("TC_OPTION_DEFAULT_ON")]
         public bool anarchyOnByDefault { set; get; }
 
-        [DropDown("PTA_OPTION_COMBO", nameof(ComboType))]
+        [DropDown("TC_OPTION_COMBO", nameof(ComboType))]
         public int keyCombo { set; get; }
     }
 }

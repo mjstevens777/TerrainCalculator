@@ -10,7 +10,7 @@ namespace TerrainCalculator
 
         public string Name => "Prop & Tree Anarchy";
 
-        public string Description => translation.GetTranslation("PTA_DESCRIPTION");
+        public string Description => translation.GetTranslation("TC_DESCRIPTION");
 
         public void OnSettingsUI(UIHelperBase helper)
         {
