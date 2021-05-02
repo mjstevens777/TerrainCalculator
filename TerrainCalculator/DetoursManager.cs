@@ -43,7 +43,7 @@ namespace TerrainCalculator
                 }
                 if (_redirects == null)
                 {
-                    UnityEngine.Debug.LogError("Prop Anarchy - DetoursManager::Revert() - _redirects field was null");
+                    UnityEngine.Debug.LogError("Terrain Calculator - DetoursManager::Revert() - _redirects field was null");
                     return;
                 }
                 RedirectionUtil.RevertRedirects(_redirects);

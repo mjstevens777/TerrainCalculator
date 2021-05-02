@@ -11,13 +11,13 @@ namespace TerrainCalculator
         private static volatile int _currentThread = -1;
         public static void ImUpToNoGood(string modName)
         {
-            UnityEngine.Debug.Log($"Prop Anarchy - enable prevent props & trees from disappearing ({modName})");
+            UnityEngine.Debug.Log($"Terrain Calculator - enable prevent props & trees from disappearing ({modName})");
             lock (ClassLock)
             {
                 if (_currentThread != -1)
                 {
-                    UnityEngine.Debug.LogError("Prop Anarchy - PropAnarchyHook::ImUpToNoGood() - _currentThread wasn't null");
-                    throw new Exception("Some other code is already using prop anarchy hook. Make sure all calls happen in the simulation thread");
+                    UnityEngine.Debug.LogError("Terrain Calculator - PropAnarchyHook::ImUpToNoGood() - _currentThread wasn't null");
+                    throw new Exception("Some other code is already using Terrain Calculator hook. Make sure all calls happen in the simulation thread");
                 }
                 _currentThread = Thread.CurrentThread.ManagedThreadId;
                 DetoursManager.Deploy(false);
@@ -26,13 +26,13 @@ namespace TerrainCalculator
 
         public static void MischiefManaged(string modName)
         {
-            UnityEngine.Debug.Log($"Prop Anarchy - disable prevent props & trees from disappearing ({modName})");
+            UnityEngine.Debug.Log($"Terrain Calculator - disable prevent props & trees from disappearing ({modName})");
             lock (ClassLock)
             {
                 if (_currentThread != Thread.CurrentThread.ManagedThreadId)
                 {
-                    UnityEngine.Debug.LogError("Prop Anarchy - PropAnarchyHook::MischiefManaged() - current thread no equal to _currentThread");
-                    throw new Exception("Some other code is already using prop anarchy hook. Make sure all calls happen in the simulation thread");
+                    UnityEngine.Debug.LogError("Terrain Calculator - PropAnarchyHook::MischiefManaged() - current thread no equal to _currentThread");
+                    throw new Exception("Some other code is already using Terrain Calculator hook. Make sure all calls happen in the simulation thread");
                 }
                 if (!DetoursManager.GetCachedDeployedState())
                 {

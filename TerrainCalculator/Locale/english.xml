@@ -10,7 +10,7 @@
     <Translation ID="TC_OPTION_DEFAULT_ON" String="Anarchy ON by default (ignored if anarchy is always ON)" />
     <Translation ID="TC_OPTION_COMBO" String="Toggle ON/OFF key combo (ignored if anarchy is always ON)" />
     <!-- UI -->
-    <Translation ID="TC_ON" String="Prop &amp; Tree Anarchy: On" />
-    <Translation ID="TC_OFF" String="Prop &amp; Tree Anarchy: Off" />
+    <Translation ID="TC_ON" String="Terrain Calculator: On" />
+    <Translation ID="TC_OFF" String="Terrain Calculator: Off" />
   </Translations>
 </Language>
