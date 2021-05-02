@@ -9,28 +9,17 @@ namespace TerrainCalculator
         public override void OnCreated(ILoading loading)
         {
             base.OnCreated(loading);
-            DetoursManager.Deploy(false);
         }
 
 
         public override void OnLevelLoaded(LoadMode mode)
         {
             base.OnLevelLoaded(mode);
-            if (OptionsWrapper<Options>.Options.anarchyAlwaysOn || OptionsWrapper<Options>.Options.anarchyOnByDefault)
-            {
-                DetoursManager.Deploy(true);
-            }
-            else
-            {
-                DetoursManager.Revert(true);
-            }
             new GameObject("TerrainCalculator").AddComponent<TerrainCalculatorUI>();
         }
 
         public override void OnLevelUnloading()
         {
-            DetoursManager.Revert(true);
-            DetoursManager.Deploy(false); //to save the trees on reloading
             var go = GameObject.Find("TerrainCalculator");
             if (go != null)
             {
@@ -41,7 +30,6 @@ namespace TerrainCalculator
         public override void OnReleased()
         {
             base.OnReleased();
-            DetoursManager.Revert(true);
         }
     }
 }

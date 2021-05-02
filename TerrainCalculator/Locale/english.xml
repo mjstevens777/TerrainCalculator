@@ -4,13 +4,7 @@
     <Translation ID="TC_DESCRIPTION" String="Generate terrain from river networks." />
     <!-- OPTIONS -->
     <Translation ID="TC_OPTION_NO_UI" String="No UI" />
-    <Translation ID="TC_OPTION_UNHIDE_PROPS" String="Unhide all props on level loading" />
-    <Translation ID="TC_OPTION_UNHIDE_TREES" String="Unhide all trees on level loading" />
-    <Translation ID="TC_OPTION_ALWAYS_ON" String="Anarchy always ON" />
-    <Translation ID="TC_OPTION_DEFAULT_ON" String="Anarchy ON by default (ignored if anarchy is always ON)" />
-    <Translation ID="TC_OPTION_COMBO" String="Toggle ON/OFF key combo (ignored if anarchy is always ON)" />
     <!-- UI -->
-    <Translation ID="TC_ON" String="Terrain Calculator: On" />
-    <Translation ID="TC_OFF" String="Terrain Calculator: Off" />
+    <Translation ID="TC_NOTICE" String="Terrain Calculator: WIP" />
   </Translations>
 </Language>
