@@ -66,19 +66,19 @@
     <Compile Include="TranslationFramework\Util.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\..\..\Games\Steam\steamapps\common\Cities_Skylines\Cities_Data\Managed\Assembly-CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="ColossalManaged">
-      <HintPath>..\..\..\..\..\Games\Steam\steamapps\common\Cities_Skylines\Cities_Data\Managed\ColossalManaged.dll</HintPath>
-    </Reference>
-    <Reference Include="ICities">
-      <HintPath>..\..\..\..\..\Games\Steam\steamapps\common\Cities_Skylines\Cities_Data\Managed\ICities.dll</HintPath>
-    </Reference>
     <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\..\CitiesDLL\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="ColossalManaged">
+      <HintPath>..\..\CitiesDLL\ColossalManaged.dll</HintPath>
+    </Reference>
+    <Reference Include="ICities">
+      <HintPath>..\..\CitiesDLL\ICities.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\..\Games\Steam\steamapps\common\Cities_Skylines\Cities_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>..\..\CitiesDLL\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup />
@@ -89,13 +89,17 @@
     <Content Include="Locale\simplified-chinese.xml" />
     <Content Include="Locale\traditional-chinese.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Locale\german.xml" />
+    <None Include="Locale\korean.xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>mkdir "$(LOCALAPPDATA)\Colossal Order\Cities_Skylines\Addons\Mods\$(TargetName)"
-del "$(LOCALAPPDATA)\Colossal Order\Cities_Skylines\Addons\Mods\$(ProjectName)\$(TargetFileName)"
-xcopy /y "$(TargetPath)" "$(LOCALAPPDATA)\Colossal Order\Cities_Skylines\Addons\Mods\$(TargetName)"
-mkdir "$(LOCALAPPDATA)\Colossal Order\Cities_Skylines\Addons\Mods\$(TargetName)"\Locale
-xcopy /y "$(ProjectDir)\Locale" "$(LOCALAPPDATA)\Colossal Order\Cities_Skylines\Addons\Mods\$(TargetName)\Locale" /s /e</PostBuildEvent>
+    <PostBuildEvent>mkdir -p "$(HOME)/Library/Application Support/Colossal Order/Cities_Skylines/Addons/Mods/$(TargetName)"
+rm -f "$(HOME)/Library/Application Support/Colossal Order/Cities_Skylines/Addons/Mods/$(TargetName)/$(TargetFileName)"
+cp "$(TargetPath)" "$(HOME)/Library/Application Support/Colossal Order/Cities_Skylines/Addons/Mods/$(TargetName)"
+rm -rf "$(HOME)/Library/Application Support/Colossal Order/Cities_Skylines/Addons/Mods/$(TargetName)/Locale"
+cp -r "$(ProjectDir)/Locale" "$(HOME)/Library/Application Support/Colossal Order/Cities_Skylines/Addons/Mods/$(TargetName)"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
