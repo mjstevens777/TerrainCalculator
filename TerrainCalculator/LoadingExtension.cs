@@ -24,14 +24,14 @@ namespace TerrainCalculator
             {
                 DetoursManager.Revert(true);
             }
-            new GameObject("PropAnarchy").AddComponent<PropAnarchyUI>();
+            new GameObject("TerrainCalculator").AddComponent<TerrainCalculatorUI>();
         }
 
         public override void OnLevelUnloading()
         {
             DetoursManager.Revert(true);
             DetoursManager.Deploy(false); //to save the trees on reloading
-            var go = GameObject.Find("PropAnarchy");
+            var go = GameObject.Find("TerrainCalculator");
             if (go != null)
             {
                 Object.Destroy(go);

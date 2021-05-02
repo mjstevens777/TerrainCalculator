@@ -4,7 +4,7 @@ using TerrainCalculator.OptionsFramework;
 
 namespace TerrainCalculator
 {
-    public static class PropAnarchyHook
+    public static class TerrainCalculatorHook
     {
         private static readonly object ClassLock = new object();
 
@@ -16,7 +16,7 @@ namespace TerrainCalculator
             {
                 if (_currentThread != -1)
                 {
-                    UnityEngine.Debug.LogError("Terrain Calculator - PropAnarchyHook::ImUpToNoGood() - _currentThread wasn't null");
+                    UnityEngine.Debug.LogError("Terrain Calculator - TerrainCalculatorHook::ImUpToNoGood() - _currentThread wasn't null");
                     throw new Exception("Some other code is already using Terrain Calculator hook. Make sure all calls happen in the simulation thread");
                 }
                 _currentThread = Thread.CurrentThread.ManagedThreadId;
@@ -31,7 +31,7 @@ namespace TerrainCalculator
             {
                 if (_currentThread != Thread.CurrentThread.ManagedThreadId)
                 {
-                    UnityEngine.Debug.LogError("Terrain Calculator - PropAnarchyHook::MischiefManaged() - current thread no equal to _currentThread");
+                    UnityEngine.Debug.LogError("Terrain Calculator - TerrainCalculatorHook::MischiefManaged() - current thread no equal to _currentThread");
                     throw new Exception("Some other code is already using Terrain Calculator hook. Make sure all calls happen in the simulation thread");
                 }
                 if (!DetoursManager.GetCachedDeployedState())

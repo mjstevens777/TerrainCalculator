@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 
-namespace PropAnarchy.Redirection
+namespace TerrainCalculator.Redirection
 {
     public class Redirector<T>
     {

@@ -32,7 +32,7 @@ namespace TerrainCalculator.TranslationFramework
 
                     }
                 }
-                throw new Exception("Failed to find PropAnarchy assembly!");
+                throw new Exception("Failed to find TerrainCalculator assembly!");
 
             }
         }

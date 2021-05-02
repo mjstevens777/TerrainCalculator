@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace TerrainCalculator
 {
-    public class PropAnarchyUI : MonoBehaviour
+    public class TerrainCalculatorUI : MonoBehaviour
     {
         private static string On => Mod.translation.GetTranslation("TC_ON");
 

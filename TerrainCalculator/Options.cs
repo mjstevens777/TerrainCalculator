@@ -2,7 +2,7 @@
 
 namespace TerrainCalculator
 {
-    [Options("PropAnarchy.xml", "CSL-PropAnarchy.xml")]
+    [Options("TerrainCalculator.xml", "CSL-TerrainCalculator.xml")]
     public class Options
     {
         public Options()
