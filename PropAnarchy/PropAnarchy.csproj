@@ -83,15 +83,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="Locale\russian.xml" />
     <Content Include="Locale\english.xml" />
-    <Content Include="Locale\chinese.xml" />
-    <Content Include="Locale\simplified-chinese.xml" />
-    <Content Include="Locale\traditional-chinese.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Locale\german.xml" />
-    <None Include="Locale\korean.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
