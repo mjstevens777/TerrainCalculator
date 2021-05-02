@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Language UniqueName="en" ReadableName="English" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Translations>
-    <Translation ID="TC_DESCRIPTION" String="Place your props and trees wherever you like" />
+    <Translation ID="TC_DESCRIPTION" String="Generate terrain from river networks" />
     <!-- OPTIONS -->
     <Translation ID="TC_OPTION_NO_UI" String="No UI" />
     <Translation ID="TC_OPTION_UNHIDE_PROPS" String="Unhide all props on level loading" />

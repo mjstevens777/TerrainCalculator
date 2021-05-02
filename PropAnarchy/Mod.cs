@@ -8,7 +8,7 @@ namespace TerrainCalculator
     {
         public static Translation translation = new Translation();
 
-        public string Name => "Prop & Tree Anarchy";
+        public string Name => "Terrain Calculator";
 
         public string Description => translation.GetTranslation("TC_DESCRIPTION");
 
