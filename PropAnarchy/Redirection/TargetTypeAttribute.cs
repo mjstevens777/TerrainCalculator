@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PropAnarchy.Redirection
+namespace TerrainCalculator.Redirection
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
     public class TargetTypeAttribute : Attribute

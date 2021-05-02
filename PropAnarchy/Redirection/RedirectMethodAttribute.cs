@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PropAnarchy.Redirection
+namespace TerrainCalculator.Redirection
 {
     [AttributeUsage(AttributeTargets.Method)]
     internal class RedirectMethodAttribute : Attribute

@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Xml.Serialization;
 using ColossalFramework.Globalization;
 
-namespace PropAnarchy.TranslationFramework
+namespace TerrainCalculator.TranslationFramework
 {
     public delegate void LanguageChangedEventHandler(string languageIdentifier);
 

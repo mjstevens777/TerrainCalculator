@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 
-namespace PropAnarchy.OptionsFramework.Attibutes
+namespace TerrainCalculator.OptionsFramework.Attibutes
 {
     [AttributeUsage(AttributeTargets.Property)]
     public class DropDownAttribute : AbstractOptionsAttribute

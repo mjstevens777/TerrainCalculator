@@ -1,4 +1,4 @@
-﻿namespace PropAnarchy.Redirection
+﻿namespace TerrainCalculator.Redirection
 {
     public class Tuple<T1, T2>
     {

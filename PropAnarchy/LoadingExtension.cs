@@ -1,8 +1,8 @@
 ﻿using ICities;
-using PropAnarchy.OptionsFramework;
+using TerrainCalculator.OptionsFramework;
 using UnityEngine;
 
-namespace PropAnarchy
+namespace TerrainCalculator
 {
     public class LoadingExtension : LoadingExtensionBase
     {

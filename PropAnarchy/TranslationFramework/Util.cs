@@ -3,7 +3,7 @@ using System.Linq;
 using ColossalFramework.Plugins;
 using ICities;
 
-namespace PropAnarchy.TranslationFramework
+namespace TerrainCalculator.TranslationFramework
 {
     public static class Util
     {

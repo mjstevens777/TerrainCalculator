@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace PropAnarchy.Redirection
+namespace TerrainCalculator.Redirection
 {
     public static class RedirectionUtil
     {

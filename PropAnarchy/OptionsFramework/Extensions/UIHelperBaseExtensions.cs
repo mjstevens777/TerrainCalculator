@@ -4,11 +4,11 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using ColossalFramework.UI;
-using PropAnarchy.OptionsFramework.Attibutes;
+using TerrainCalculator.OptionsFramework.Attibutes;
 using ICities;
 using UnityEngine;
 
-namespace PropAnarchy.OptionsFramework.Extensions
+namespace TerrainCalculator.OptionsFramework.Extensions
 {
     public static class UIHelperBaseExtensions
     {

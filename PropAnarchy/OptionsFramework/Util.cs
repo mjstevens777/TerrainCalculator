@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace PropAnarchy.OptionsFramework
+namespace TerrainCalculator.OptionsFramework
 {
     internal class Util
     {

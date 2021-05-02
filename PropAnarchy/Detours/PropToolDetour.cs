@@ -1,7 +1,7 @@
-﻿using PropAnarchy.Redirection;
+﻿using TerrainCalculator.Redirection;
 using UnityEngine;
 
-namespace PropAnarchy.Detours
+namespace TerrainCalculator.Detours
 {
     [TargetType(typeof(PropTool))]
     public class PropToolDetour

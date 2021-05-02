@@ -1,6 +1,6 @@
-﻿using PropAnarchy.OptionsFramework.Attibutes;
+﻿using TerrainCalculator.OptionsFramework.Attibutes;
 
-namespace PropAnarchy.OptionsFramework.Extensions
+namespace TerrainCalculator.OptionsFramework.Extensions
 {
     public static class CommonExtensions
     {

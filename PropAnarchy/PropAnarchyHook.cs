@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
-using PropAnarchy.OptionsFramework;
+using TerrainCalculator.OptionsFramework;
 
-namespace PropAnarchy
+namespace TerrainCalculator
 {
     public static class PropAnarchyHook
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PropAnarchy.TranslationFramework
+namespace TerrainCalculator.TranslationFramework
 {
     /// <summary>
     /// Translates the specified field into the value denoted by the identifier

@@ -1,11 +1,11 @@
 ﻿using System.Runtime.CompilerServices;
 using ColossalFramework;
 using ColossalFramework.Math;
-using PropAnarchy.OptionsFramework;
-using PropAnarchy.Redirection;
+using TerrainCalculator.OptionsFramework;
+using TerrainCalculator.Redirection;
 using UnityEngine;
 
-namespace PropAnarchy.Detours
+namespace TerrainCalculator.Detours
 {
     [TargetType(typeof(TreeInstance))]
     public class TreeInstanceDetour

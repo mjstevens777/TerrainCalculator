@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PropAnarchy.OptionsFramework.Attibutes
+namespace TerrainCalculator.OptionsFramework.Attibutes
 {
     [AttributeUsage(AttributeTargets.Property)]
     public class SliderAttribute : AbstractOptionsAttribute

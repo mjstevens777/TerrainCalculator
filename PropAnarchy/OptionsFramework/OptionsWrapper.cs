@@ -3,10 +3,10 @@ using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
 using ColossalFramework.IO;
-using PropAnarchy.OptionsFramework.Attibutes;
+using TerrainCalculator.OptionsFramework.Attibutes;
 using UnityEngine;
 
-namespace PropAnarchy.OptionsFramework
+namespace TerrainCalculator.OptionsFramework
 {
     public class OptionsWrapper<T>
     {

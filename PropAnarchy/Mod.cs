@@ -1,8 +1,8 @@
 ﻿using ICities;
-using PropAnarchy.OptionsFramework.Extensions;
-using PropAnarchy.TranslationFramework;
+using TerrainCalculator.OptionsFramework.Extensions;
+using TerrainCalculator.TranslationFramework;
 
-namespace PropAnarchy
+namespace TerrainCalculator
 {
     public class Mod : IUserMod
     {

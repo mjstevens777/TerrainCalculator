@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PropAnarchy.OptionsFramework.Attibutes
+namespace TerrainCalculator.OptionsFramework.Attibutes
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
     public class OptionsAttribute : Attribute

@@ -1,8 +1,8 @@
 ﻿using System;
-using PropAnarchy.OptionsFramework;
+using TerrainCalculator.OptionsFramework;
 using UnityEngine;
 
-namespace PropAnarchy
+namespace TerrainCalculator
 {
     public static class InputUtil
     {

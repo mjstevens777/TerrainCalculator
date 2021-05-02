@@ -1,6 +1,6 @@
-﻿using PropAnarchy.OptionsFramework.Attibutes;
+﻿using TerrainCalculator.OptionsFramework.Attibutes;
 
-namespace PropAnarchy
+namespace TerrainCalculator
 {
     [Options("PropAnarchy.xml", "CSL-PropAnarchy.xml")]
     public class Options

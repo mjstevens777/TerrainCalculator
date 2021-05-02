@@ -1,8 +1,8 @@
 ﻿using ColossalFramework.UI;
-using PropAnarchy.OptionsFramework;
+using TerrainCalculator.OptionsFramework;
 using UnityEngine;
 
-namespace PropAnarchy
+namespace TerrainCalculator
 {
     public class PropAnarchyUI : MonoBehaviour
     {

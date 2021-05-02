@@ -21,7 +21,7 @@ THE SOFTWARE.
 using System;
 using System.Reflection;
 
-namespace PropAnarchy.Redirection
+namespace TerrainCalculator.Redirection
 {
 
     public struct RedirectCallsState

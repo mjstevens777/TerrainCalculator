@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace PropAnarchy.TranslationFramework
+namespace TerrainCalculator.TranslationFramework
 {
     [XmlRoot(ElementName = "Language", Namespace = "", IsNullable = false)]
     public class Language

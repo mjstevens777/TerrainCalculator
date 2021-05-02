@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using PropAnarchy.Redirection;
+using TerrainCalculator.Redirection;
 
-namespace PropAnarchy
+namespace TerrainCalculator
 {
     public static class DetoursManager
     {

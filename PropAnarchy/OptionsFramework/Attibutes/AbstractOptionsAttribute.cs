@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace PropAnarchy.OptionsFramework.Attibutes
+namespace TerrainCalculator.OptionsFramework.Attibutes
 {
     public abstract class AbstractOptionsAttribute : Attribute
     {

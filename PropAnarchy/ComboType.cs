@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace PropAnarchy
+namespace TerrainCalculator
 {
     public enum ComboType
     {
