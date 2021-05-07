@@ -1,11 +1,13 @@
 ﻿using System;
 namespace TerrainCalculator.Network
 {
-    public struct FlagDouble
+    public class FlagDouble
     {
         public double Value { get; set; }
         public bool IsFixed { get; set; }
         public bool IsImplicit { get; set; }
+
+        public bool IsSet { get => IsFixed || IsImplicit; }
 
         public void SetFixed(double value)
         {

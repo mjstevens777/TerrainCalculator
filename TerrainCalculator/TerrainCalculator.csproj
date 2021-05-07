@@ -58,13 +58,14 @@
     <Compile Include="Tool.cs" />
     <Compile Include="TerrainExtension.cs" />
     <Compile Include="Network\Network.cs" />
-    <Compile Include="Network\Node.cs" />
+    <Compile Include="Network\Graph.cs" />
     <Compile Include="Network\River.cs" />
     <Compile Include="Network\Lake.cs" />
     <Compile Include="Network\Path.cs" />
     <Compile Include="Network\FlagDouble.cs" />
     <Compile Include="Network\Lake.Test.cs" />
     <Compile Include="Network\River.Test.cs" />
+    <Compile Include="Network\Network.Test.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Release'">
     <Compile Remove="**\*.Tests.cs" />
@@ -86,6 +87,9 @@
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.3.13.2\lib\net35\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="QuikGraph">
+      <HintPath>..\packages\QuikGraph.2.3.0\lib\net35\QuikGraph.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
