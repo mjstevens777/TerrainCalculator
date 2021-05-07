@@ -5,7 +5,7 @@ using ColossalFramework;
 
 namespace TerrainCalculator
 {
-	public static class TRT
+	public static class Tool
 	{
 		static bool carve = false;
 		public static bool clearAfterCarve = true;
@@ -20,6 +20,7 @@ namespace TerrainCalculator
 		public static List<RiverNode> nodes = new List<RiverNode>();
 		public static List<Vector4> updateArea = new List<Vector4>();
 		static Vector3[] tri = new Vector3[3];
+
 		public static void UpdateHeight()
 		{
 			if (nodes.Count > 0 && !carve)
@@ -35,6 +36,7 @@ namespace TerrainCalculator
 				}
 			}
 		}
+
 		public static void InterpolateH()
 		{
 			float totalLength = 0;
@@ -57,6 +59,7 @@ namespace TerrainCalculator
 				n.UpdateNode();
 			}
 		}
+
 		public static void InterpolateW()
 		{
 			float totalLength = 0;
@@ -80,6 +83,7 @@ namespace TerrainCalculator
 				n.UpdateNode();
 			}
 		}
+
 		public static void InterpolateD()
 		{
 			float totalLength = 0;
@@ -102,6 +106,7 @@ namespace TerrainCalculator
 				n.UpdateNode();
 			}
 		}
+
 		public static void TryRiver()
 		{
 			int x, z;
@@ -118,10 +123,10 @@ namespace TerrainCalculator
 				}
 				terrain.PositionToHeightMapCoord(lastPos.x, lastPos.z, out x, out z);
 				lastPos.y = terrain.RawToHeight(heights[x + z * res]);
-				for (int n = 0; n < TRT.nodes.Count - 1; n++)
+				for (int n = 0; n < Tool.nodes.Count - 1; n++)
 				{
-					float dist = (lastPos - TRT.nodes[n].position).sqrMagnitude;
-					if (dist * 2 < TRT.nodes[n].scale.x * TRT.nodes[n].scale.x)
+					float dist = (lastPos - Tool.nodes[n].position).sqrMagnitude;
+					if (dist * 2 < Tool.nodes[n].scale.x * Tool.nodes[n].scale.x)
 					{
 						return;
 					}
@@ -154,6 +159,7 @@ namespace TerrainCalculator
 				}
 			}
 		}
+
 		public static void CarveRiver()
 		{
 			carve = true;
@@ -172,6 +178,7 @@ namespace TerrainCalculator
 			}
 			carve = false;
 		}
+
 		static void CarveNode(RiverNode n)
 		{
 			int row = n.vertices.Count / 6;
@@ -190,6 +197,7 @@ namespace TerrainCalculator
 			}
 			updateArea.Add(new Vector4(n.lx, n.lz, n.hx, n.hz));
 		}
+
 		static void CarveTriangle(Vector3[] p, float off)
 		{
 			float lx = float.MaxValue;
@@ -233,6 +241,7 @@ namespace TerrainCalculator
 				}
 			}
 		}
+
 		static float IsInsideTriangle(float x, float z, Vector3[] points)
 		{
 			float w1 = ((points[0].x * (points[2].z - points[0].z)) + ((z - points[0].z) * (points[2].x - points[0].x)) - (x * (points[2].z - points[0].z))) / (((points[1].z - points[0].z) * (points[2].x - points[0].x)) - ((points[1].x - points[0].x) * (points[2].z - points[0].z)));
@@ -243,6 +252,7 @@ namespace TerrainCalculator
 			}
 			return -1f;
 		}
+
 		static Vector2[,] Slopes()
 		{
 			Vector2[,] slopes = new Vector2[res, res];
@@ -299,6 +309,7 @@ namespace TerrainCalculator
 			}
 			return slopes;
 		}
+
 		public static Vector3 Bezier(Vector3 p0, Vector3 p1, Vector3 p2, float t) //it's called be'zsjeeeee; source 'Coding Math' youtube
 		{
 			Vector3 result = Vector3.zero;

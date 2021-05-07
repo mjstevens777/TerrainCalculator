@@ -86,12 +86,12 @@ namespace TerrainCalculator
 				}
 				if (lines.Length > 2)
 				{
-					TRT.loadMapO = lines[1].Split(':')[1] == "True";
-					TRT.loadGameO = lines[2].Split(':')[1] == "True";
+					Tool.loadMapO = lines[1].Split(':')[1] == "True";
+					Tool.loadGameO = lines[2].Split(':')[1] == "True";
 				}
 				if (lines.Length > 3)
 				{
-					TRT.clearAfterCarve = lines[3].Split(':')[1] == "True";
+					Tool.clearAfterCarve = lines[3].Split(':')[1] == "True";
 				}
 			}
 			windowRect = new Rect(menuX, menuY, menuWidth, menuHeight);
@@ -101,10 +101,10 @@ namespace TerrainCalculator
 			if (active && initialized)
 			{
 				Singleton<SimulationManager>.instance.SimulationPaused = true;
-				if (TRT.updateHeight)
+				if (Tool.updateHeight)
 				{
-					TRT.UpdateHeight();
-					TRT.updateHeight = false;
+					Tool.UpdateHeight();
+					Tool.updateHeight = false;
 				}
 				if (Input.GetMouseButtonDown(0) && UIView.IsInsideUI() && !OnMenu())
 				{ //abort!!
@@ -146,13 +146,13 @@ namespace TerrainCalculator
 					}
 					else
 					{ //delete node
-						TRT.nodes[selection].RemoveNode();
+						Tool.nodes[selection].RemoveNode();
 						selection = -1;
 					}
 				}
 				if (adjustPos)
 				{ //can only be called if selected
-					TRT.nodes[selection].SetPosition(hitpos);
+					Tool.nodes[selection].SetPosition(hitpos);
 				}
 				else if (adjustScale)
 				{
@@ -162,7 +162,7 @@ namespace TerrainCalculator
 					float x = storedScale.x;
 					float y = storedScale.y;
 					float z = storedScale.z;
-					float maxDepth = TRT.terrain.SampleTerrainHeight(cursorNode.transform.position.x, cursorNode.transform.position.z);
+					float maxDepth = Tool.terrain.SampleTerrainHeight(cursorNode.transform.position.x, cursorNode.transform.position.z);
 					x = Mathf.Clamp(x + addWidth, 16f, 1024f);
 					y = Mathf.Clamp(y + addDepth, 0, maxDepth);
 					z = Mathf.Clamp(z + addWidth, 16f, 1024f);
@@ -174,8 +174,8 @@ namespace TerrainCalculator
 				}
 				if (selection >= 0)
 				{ //a node is selected
-					cursorNode.transform.position = TRT.nodes[selection].position;
-					TRT.nodes[selection].SetScale(cursorScale); //cursor already has scale of node. this is for adjusting
+					cursorNode.transform.position = Tool.nodes[selection].position;
+					Tool.nodes[selection].SetScale(cursorScale); //cursor already has scale of node. this is for adjusting
 				}
 				if (!adjustScale)
 				{
@@ -184,13 +184,13 @@ namespace TerrainCalculator
 						if (!adjustPos)
 						{
 							selection = -1;
-							for (int s = 0; s < TRT.nodes.Count; s++)
+							for (int s = 0; s < Tool.nodes.Count; s++)
 							{
-								float dist = (hitpos - TRT.nodes[s].position).sqrMagnitude; //it's cheaper 
-								if (dist * 2 < TRT.nodes[s].scale.x * TRT.nodes[s].scale.x)
+								float dist = (hitpos - Tool.nodes[s].position).sqrMagnitude; //it's cheaper 
+								if (dist * 2 < Tool.nodes[s].scale.x * Tool.nodes[s].scale.x)
 								{ //close enough?
 									selection = s; //selection for next round; could be the same...whatever
-									cursorScale = TRT.nodes[selection].scale;
+									cursorScale = Tool.nodes[selection].scale;
 									helpText = "Click left and drag to move\r\nLeft shift and drag to adjust\r\nClick right to delete";
 								}
 							}
@@ -199,13 +199,13 @@ namespace TerrainCalculator
 						if (selection < 0)
 						{ //nothing selected
 							cursorNode.transform.position = hitpos;
-							if (TRT.nodes.Count < 3)
+							if (Tool.nodes.Count < 3)
 							{
 								helpText = "Click left to add node\r\nClick right for menu";
 							}
 							if (Input.GetMouseButtonDown(0))
 							{
-								TRT.nodes.Add(new RiverNode(hitpos, cursorScale));
+								Tool.nodes.Add(new RiverNode(hitpos, cursorScale));
 							}
 						}
 						else
@@ -236,16 +236,16 @@ namespace TerrainCalculator
 		}
 		void RenderNodes()
 		{
-			if (TRT.nodes.Count > 0)
+			if (Tool.nodes.Count > 0)
 			{
-				for (int p = 0; p < TRT.nodes.Count; p++)
+				for (int p = 0; p < Tool.nodes.Count; p++)
 				{
-					Matrix4x4 matrix = Matrix4x4.TRS(TRT.nodes[p].position, Quaternion.identity, TRT.nodes[p].scale);
+					Matrix4x4 matrix = Matrix4x4.TRS(Tool.nodes[p].position, Quaternion.identity, Tool.nodes[p].scale);
 					Graphics.DrawMesh(nodeMesh, matrix, nodeMaterial, 0); //draw nodes
-					if (TRT.nodes[p].mesh != null)
+					if (Tool.nodes[p].mesh != null)
 					{
 						matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one);
-						Graphics.DrawMesh(TRT.nodes[p].mesh, matrix, shapeMaterial, 0); //draw part river mesh from node
+						Graphics.DrawMesh(Tool.nodes[p].mesh, matrix, shapeMaterial, 0); //draw part river mesh from node
 					}
 				}
 			}
@@ -267,7 +267,7 @@ namespace TerrainCalculator
 		}
 		void OnGUI()
 		{
-			if ((TRT.loadMap && TRT.loadMapO) || (TRT.loadGame && TRT.loadGameO))
+			if ((Tool.loadMap && Tool.loadMapO) || (Tool.loadGame && Tool.loadGameO))
 			{
 				if (editMode)
 				{
@@ -275,7 +275,7 @@ namespace TerrainCalculator
 					GUI.Label(new Rect(Input.mousePosition.x + 20f, Screen.height - Input.mousePosition.y - 20f, Screen.width, Screen.height), helpText);
 					return;
 				}
-				if (active && TRT.nodes.Count > 0)
+				if (active && Tool.nodes.Count > 0)
 				{
 					windowRect.width = 120;
 					windowRect.height = 145;
@@ -291,15 +291,15 @@ namespace TerrainCalculator
 		}
 		void Menu(int windowID)
 		{
-			if (!active || TRT.nodes.Count == 0)
+			if (!active || Tool.nodes.Count == 0)
 			{
-				if (TRT.nodes.Count == 0)
+				if (Tool.nodes.Count == 0)
 				{
 					if (GUI.Button(new Rect(5, 19, 110, 20), "CreateRiver"))
 					{
 						Singleton<ToolsModifierControl>.instance.CloseEverything();
 						Initialize();
-						TRT.nodes.Clear();
+						Tool.nodes.Clear();
 						active = true;
 						editMode = true;
 					}
@@ -321,27 +321,27 @@ namespace TerrainCalculator
 				}
 				if (GUI.Button(new Rect(5, 37, 110, 20), "LerpHeight"))
 				{
-					TRT.InterpolateH();
+					Tool.InterpolateH();
 				}
 				if (GUI.Button(new Rect(5, 57, 110, 20), "LerpWidth"))
 				{
-					TRT.InterpolateW();
+					Tool.InterpolateW();
 				}
 				if (GUI.Button(new Rect(5, 77, 110, 20), "LerpDepth"))
 				{
-					TRT.InterpolateD();
+					Tool.InterpolateD();
 				}
 				if (GUI.Button(new Rect(5, 97, 110, 20), "Reset"))
 				{
-					TRT.nodes.Clear();
+					Tool.nodes.Clear();
 					active = true;
 					editMode = true;
 				}
-				if (TRT.nodes.Count > 1)
+				if (Tool.nodes.Count > 1)
 				{
 					if (GUI.Button(new Rect(5, 117, 110, 20), "Carve"))
 					{
-						TRT.CarveRiver();
+						Tool.CarveRiver();
 						active = false;
 						editMode = false;
 					}
@@ -350,7 +350,7 @@ namespace TerrainCalculator
 				{
 					if (GUI.Button(new Rect(5, 117, 110, 20), "TryRiver!"))
 					{
-						TRT.TryRiver();
+						Tool.TryRiver();
 					}
 				}
 			}
@@ -371,9 +371,9 @@ namespace TerrainCalculator
 		{
 			string data =
 				"MenuPosition:" + windowRect.x.ToString() + "," + windowRect.y.ToString() + "\r\n" +
-				"Use in TerrainEditor:" + TRT.loadMapO.ToString() + "\r\n" +
-				"Use in Game:" + TRT.loadGameO.ToString() + "\r\n" +
-				"Clear after carve:" + TRT.clearAfterCarve.ToString();
+				"Use in TerrainEditor:" + Tool.loadMapO.ToString() + "\r\n" +
+				"Use in Game:" + Tool.loadGameO.ToString() + "\r\n" +
+				"Clear after carve:" + Tool.clearAfterCarve.ToString();
 			File.WriteAllText(settingsFilePath, data);
 		}
 	}

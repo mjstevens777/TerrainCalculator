@@ -14,30 +14,34 @@ namespace TerrainCalculator
 		public List<float> heights = new List<float>();
 		public float length = 0f;
 		public Mesh mesh;
+
 		public RiverNode(Vector3 _position, Vector3 _scale)
 		{
 			position = _position;
 			scale = _scale;
-			if (TRT.nodes.Count > 0)
+			if (Tool.nodes.Count > 0)
 			{
-				parent = TRT.nodes[TRT.nodes.Count - 1];
+				parent = Tool.nodes[Tool.nodes.Count - 1];
 				parent.child = this;
 				UpdateNeighbours();
 			}
 			UpdateNode();
 		}
+
 		public void SetPosition(Vector3 _position)
 		{
 			position = _position;
 			UpdateNode();
 			UpdateNeighbours();
 		}
+
 		public void SetScale(Vector3 _scale)
 		{
 			scale = _scale;
 			UpdateNode();
 			UpdateNeighbours();
 		}
+
 		public void RemoveNode()
 		{
 			if (parent != null)
@@ -50,12 +54,13 @@ namespace TerrainCalculator
 				child.parent = parent;
 				child.UpdateNode();
 			}
-			TRT.nodes.Remove(this);
+			Tool.nodes.Remove(this);
 			mesh = null;
 			parent = null;
 			child = null;
 			//this = Sparta;			
 		}
+
 		public void UpdateNode()
 		{
 			lx = float.MaxValue;
@@ -75,6 +80,7 @@ namespace TerrainCalculator
 			}
 			CreateMesh(CreateEnd());
 		}
+
 		void CreateMesh(List<Vector3> dots) //"CreateMess"
 		{
 			int rows = (dots.Count / 2) - 1;
@@ -102,6 +108,7 @@ namespace TerrainCalculator
 			mesh.normals = normals;
 			mesh.RecalculateBounds();
 		}
+
 		List<Vector3> CreateEnd()
 		{
 			List<Vector3> dots = new List<Vector3>();
@@ -144,6 +151,7 @@ namespace TerrainCalculator
 			}
 			return dots;
 		}
+
 		List<Vector3> CreateBend()
 		{
 			List<Vector3> dots = new List<Vector3>();
@@ -164,8 +172,8 @@ namespace TerrainCalculator
 			for (int i = 0; i <= step; i++)
 			{
 				float t = (float)i / (float)step;
-				Vector3 pos = TRT.Bezier(startP, midP, endP, t);
-				Vector3 sca = TRT.Bezier(startS, midS, endS, t);
+				Vector3 pos = Tool.Bezier(startP, midP, endP, t);
+				Vector3 sca = Tool.Bezier(startS, midS, endS, t);
 				Vector3 dir = Quaternion.Lerp(startQ, endQ, t) * Vector3.forward;
 				Vector3 offset = Vector3.Cross(Vector3.up, dir);
 				length += (pos - lastpos).magnitude;
@@ -176,6 +184,7 @@ namespace TerrainCalculator
 			}
 			return dots;
 		}
+
 		Vector3 NBound(Vector3 v)
 		{
 			if (v.x < lx)
@@ -196,6 +205,7 @@ namespace TerrainCalculator
 			}
 			return v;
 		}
+
 		void UpdateNeighbours()
 		{
 			if (parent != null)
