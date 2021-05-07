@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\NUnit3TestAdapter.3.17.0\build\net35\NUnit3TestAdapter.props" Condition="Exists('..\packages\NUnit3TestAdapter.3.17.0\build\net35\NUnit3TestAdapter.props')" />
+  <Import Project="..\packages\NUnit.3.13.2\build\NUnit.props" Condition="Exists('..\packages\NUnit.3.13.2\build\NUnit.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -55,6 +57,17 @@
     <Compile Include="Menu.cs" />
     <Compile Include="Tool.cs" />
     <Compile Include="TerrainExtension.cs" />
+    <Compile Include="Network\Network.cs" />
+    <Compile Include="Network\Node.cs" />
+    <Compile Include="Network\River.cs" />
+    <Compile Include="Network\Lake.cs" />
+    <Compile Include="Network\Path.cs" />
+    <Compile Include="Network\FlagDouble.cs" />
+    <Compile Include="Network\Lake.Test.cs" />
+    <Compile Include="Network\River.Test.cs" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <Compile Remove="**\*.Tests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
@@ -71,10 +84,18 @@
     <Reference Include="UnityEngine">
       <HintPath>..\..\CitiesDLL\UnityEngine.dll</HintPath>
     </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.3.13.2\lib\net35\nunit.framework.dll</HintPath>
+    </Reference>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Content Include="Locale\english.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Network\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
