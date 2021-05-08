@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\ILRepack.2.0.18\build\ILRepack.props" Condition="Exists('..\packages\ILRepack.2.0.18\build\ILRepack.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -85,24 +86,35 @@
     <Content Include="Locale\english.xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Network\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>mkdir -p "$(HOME)/Library/Application Support/Colossal Order/Cities_Skylines/Addons/Mods/$(TargetName)"
-rm -f "$(HOME)/Library/Application Support/Colossal Order/Cities_Skylines/Addons/Mods/$(TargetName)/$(TargetFileName)"
-cp "$(TargetPath)" "$(HOME)/Library/Application Support/Colossal Order/Cities_Skylines/Addons/Mods/$(TargetName)"
-rm -rf "$(HOME)/Library/Application Support/Colossal Order/Cities_Skylines/Addons/Mods/$(TargetName)/Locale"
-cp -r "$(ProjectDir)/Locale" "$(HOME)/Library/Application Support/Colossal Order/Cities_Skylines/Addons/Mods/$(TargetName)"</PostBuildEvent>
-  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
-  <Target Name="AfterBuild">
-  </Target>
   -->
+  <Import Project="..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets" Condition="Exists('..\packages\ILRepack.Lib.MSBuild.Task.2.0.18.2\build\ILRepack.Lib.MSBuild.Task.targets')" />
+  
+  <Target Name="ILRepacker" AfterTargets="Build">
+    <ItemGroup>
+      <InputAssemblies Include="$(TargetPath)" />
+      <InputAssemblies Include="@(ReferencePathWithRefAssemblies)" Condition="'%(filename)' == 'QuikGraph'" />
+    </ItemGroup>
+
+    <ILRepack AllowDuplicateResources="false" DebugInfo="true" Internalize="true" InputAssemblies="@(InputAssemblies)" OutputFile="$(TargetPath)" Parallel="true" TargetKind="SameAsPrimaryAssembly" />
+  </Target>
+   <PropertyGroup>
+    <ModDirectory>$(HOME)/Library/Application Support/Colossal Order/Cities_Skylines/Addons/Mods/$(TargetName)</ModDirectory>
+  </PropertyGroup>
+  <Target Name="Install" AfterTargets="ILRepacker">
+    <Message Text="Installing mod to $(ModDirectory)" />
+    <RemoveDir Directories="$(ModDirectory)" />
+    <MakeDir Directories="$(ModDirectory)" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(ModDirectory)/$(TargetFileName)" />
+    <Copy SourceFiles="@(Content)" DestinationFolder="$(ModDirectory)/Locale" />
+  </Target>
 </Project>
