@@ -1,7 +1,8 @@
 ﻿using NUnit.Framework;
 using UnityEngine;
+using TerrainCalculator.Network;
 
-namespace TerrainCalculator.Network
+namespace TerrainCalculator.Test
 {
 
     [TestFixture]
@@ -16,7 +17,7 @@ namespace TerrainCalculator.Network
 		[Test]
 		public void TestInterpolate()
 		{
-			Network net = new Network();
+			WaterNetwork net = new WaterNetwork();
 			Lake l1 = net.NewLake();
 			Node n1 = net.NewNode();
 			n1.Pos.x = 100;

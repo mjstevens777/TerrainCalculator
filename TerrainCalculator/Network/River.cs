@@ -3,7 +3,7 @@ namespace TerrainCalculator.Network
 {
     public class River : Path
     {
-        public River(Network network) : base(network)
+        public River(WaterNetwork network) : base(network)
         {
         }
     }

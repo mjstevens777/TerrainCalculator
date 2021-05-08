@@ -16,7 +16,7 @@ namespace TerrainCalculator.Network
 		[Test]
 		public void TestInterpolate()
 		{
-			Network net = new Network();
+			WaterNetwork net = new WaterNetwork();
 			River r1 = net.NewRiver();
 			Node n1 = net.NewNode();
 			n1.Pos.x = 100;

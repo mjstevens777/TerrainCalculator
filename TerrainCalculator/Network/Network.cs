@@ -9,13 +9,13 @@ using QuikGraph.Algorithms.ShortestPath;
 
 namespace TerrainCalculator.Network
 {
-    public class Network
+    public class WaterNetwork
     {
         List<Lake> _lakes;
         List<River> _rivers;
         Graph _graph;
 
-        public Network()
+        public WaterNetwork()
         {
             _lakes = new List<Lake>();
             _rivers = new List<River>();

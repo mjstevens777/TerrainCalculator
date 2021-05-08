@@ -8,10 +8,10 @@ namespace TerrainCalculator.Network
     public class Path : List<Node>
     {
 
-        Network _network;
+        WaterNetwork _network;
         public const int NumSegments = 30;
 
-        public Path(Network network) : base()
+        public Path(WaterNetwork network) : base()
         {
             _network = network;
         }

@@ -16,7 +16,7 @@ namespace TerrainCalculator.Network
             RiverSlope
         }
 
-        Network _network;
+        WaterNetwork _network;
         public Vector2 Pos;
 
         // Interpolation gradient
@@ -27,7 +27,7 @@ namespace TerrainCalculator.Network
         // Control parameters
         public Dictionary<ImplicitKey, FlagDouble> ImplicitValues;
 
-        public Node(Network network)
+        public Node(WaterNetwork network)
         {
             _network = network;
             Pos = new Vector2(0, 0);

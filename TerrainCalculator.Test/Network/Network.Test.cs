@@ -11,7 +11,7 @@ namespace TerrainCalculator.Network
 	{
 		private class TestNet
         {
-			public Network Net;
+			public WaterNetwork Net;
 			public List<Node> Nodes;
 			public List<Lake> Lakes;
 			public List<River> Rivers;
@@ -22,7 +22,7 @@ namespace TerrainCalculator.Network
 				Rivers = new List<River>();
 				Lakes = new List<Lake>();
 
-				Net = new Network();
+				Net = new WaterNetwork();
 				Lakes.Add(Net.NewLake());
 				Rivers.Add(Net.NewRiver());
 				foreach (int i in Enumerable.Range(0, 6))
@@ -124,7 +124,7 @@ namespace TerrainCalculator.Network
 			expectedValues[Node.ImplicitKey.Elevation] =
 				new List<double> { 40, 40, 40, 40, 40 + deltaZ, 40 + 2 * deltaZ };
 
-			Network net = testNet.Net;
+			WaterNetwork net = testNet.Net;
 			net.InterpolateAll();
 
 			double delta = 0.0001;
@@ -150,7 +150,7 @@ namespace TerrainCalculator.Network
 		{
 			TestNet testNet = new TestNet();
 
-			Network net = testNet.Net;
+			WaterNetwork net = testNet.Net;
 
 			testNet.Nodes[0].RiverSlope.SetFixed(2);
 			net.InterpolateAll();

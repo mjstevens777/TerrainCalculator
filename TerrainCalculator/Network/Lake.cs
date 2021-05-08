@@ -5,7 +5,7 @@ namespace TerrainCalculator.Network
 {
     public class Lake : Path
     {
-        public Lake(Network network) : base(network)
+        public Lake(WaterNetwork network) : base(network)
         {
         }
 
