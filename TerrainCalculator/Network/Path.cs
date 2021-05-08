@@ -9,7 +9,7 @@ namespace TerrainCalculator.Network
     {
 
         Network _network;
-        const int NumSegments = 30;
+        public const int NumSegments = 30;
 
         public Path(Network network) : base()
         {
@@ -31,14 +31,14 @@ namespace TerrainCalculator.Network
             set => _isDirty = value;
         }
 
-        public List<Edge> GetEdges()
+        public virtual List<Edge> GetEdges()
         {
-            SetDirections();
+            _setDirections();
             List<Edge> edges = new List<Edge>();
             foreach (int i in Enumerable.Range(0, Count))
             {
-                Node left = getNodeInBounds(i);
-                Node right = getNodeInBounds(i + 1);
+                Node left = _getNodeInBounds(i);
+                Node right = _getNodeInBounds(i + 1);
                 if (right == null) { break; }
 
                 List<Vector2> interp = new List<Vector2>();
@@ -46,9 +46,9 @@ namespace TerrainCalculator.Network
                 foreach (int j in Enumerable.Range(0, NumSegments + 1))
                 {
                     float t = i + (j / (float)NumSegments);
-                    interp.Add(Interpolate2d(t));
+                    interp.Add(_interpolate2d(t));
                 }
-                Edge edge = new Edge(left, right, interp);
+                Edge edge = new Edge(left, right, interp, false);
                 edges.Add(edge);
             }
             return edges;
@@ -75,7 +75,7 @@ namespace TerrainCalculator.Network
                 int i = start + 1;
                 while (true)
                 {
-                    Node node = getNodeInBounds(i);
+                    Node node = _getNodeInBounds(i);
                     if (node == null) break;
                     chain.Add(node);
                     if (node.ImplicitValues[key].IsSet) break;
@@ -123,12 +123,12 @@ namespace TerrainCalculator.Network
             return chains;
         }
 
-        public Vector2 Interpolate2d(float t)
+        private Vector2 _interpolate2d(float t)
         {
             int i = Mathf.FloorToInt(t);
             t = t - i;
-            Node left = getNodeInBounds(i);
-            Node right = getNodeInBounds(i + 1);
+            Node left = _getNodeInBounds(i);
+            Node right = _getNodeInBounds(i + 1);
 
             if (t == 0) { return left.Pos; }
             if (right == null) { throw new IndexOutOfRangeException("Path interpolation out of bounds"); }
@@ -143,19 +143,19 @@ namespace TerrainCalculator.Network
             );
         }
 
-        public void SetDirections()
+        private void _setDirections()
         {
             foreach(int i in Enumerable.Range(0, Count))
             {
-                SetDirection(i);
+                _setDirection(i);
             }
         }
 
-        private void SetDirection(int index)
+        private void _setDirection(int index)
         {
-            Node node = getNodeInBounds(index);
-            Node left = getNodeInBounds(index - 1);
-            Node right = getNodeInBounds(index + 1);
+            Node node = _getNodeInBounds(index);
+            Node left = _getNodeInBounds(index - 1);
+            Node right = _getNodeInBounds(index + 1);
             if (left == null || right == null)
             {
                 node.Grad.Set(0f, 0f);
@@ -164,7 +164,7 @@ namespace TerrainCalculator.Network
             node.Grad = (right.Pos - left.Pos) / 2f;
         }
 
-        protected virtual Node getNodeInBounds(int index)
+        protected virtual Node _getNodeInBounds(int index)
         {
             if (index >= 0 && index < Count)
             {

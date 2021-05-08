@@ -22,6 +22,10 @@ namespace TerrainCalculator.Network
             {
                 throw new ApplicationException("Cannot set implicit value that has already been fixed");
             }
+            if (IsImplicit)
+            {
+                throw new ApplicationException("Cannot set implicit value that has already been set");
+            }
             Value = value;
             IsImplicit = true;
         }

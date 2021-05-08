@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using QuikGraph;
+using QuikGraph.Algorithms;
+using QuikGraph.Algorithms.Search;
+using QuikGraph.Algorithms.ShortestPath;
 
 namespace TerrainCalculator.Network
 {
@@ -37,42 +41,38 @@ namespace TerrainCalculator.Network
             return lake;
         }
 
-        public ReadOnlyCollection<Node> Nodes
+        class NodeException : Exception
         {
-            get
+            public Node Node;
+            public NodeException(string message, Node node) : base(message)
             {
-                HashSet<Node> nodes = new HashSet<Node>();
-                foreach (River river in _rivers)
-                {
-                    foreach (Node node in river)
-                    {
-                        nodes.Add(node);
-                    }
-                }
-                foreach (Lake lake in _lakes)
-                {
-                    foreach (Node node in lake)
-                    {
-                        nodes.Add(node);
-                    }
-                }
-                return new List<Node>(nodes).AsReadOnly();
+                Node = node;
             }
         }
 
-        public void BuildGraph()
+        public void InterpolateAll()
+        {
+            _buildGraph();
+            foreach(Node node in _graph.Vertices)
+            {
+                node.ResetImplicit();
+            }
+            _interpolateValue(Node.ImplicitKey.ShoreWidth);
+            _interpolateValue(Node.ImplicitKey.ShoreDepth);
+            _interpolateValue(Node.ImplicitKey.RiverWidth);
+            _interpolateValue(Node.ImplicitKey.RiverSlope);
+            _interpolateZ();
+        }
+
+        private void _buildGraph()
         {
             _graph = new Graph();
-            foreach (Node node in Nodes)
-            {
-                _graph.AddVertex(node);
-            }
 
             foreach (River river in _rivers)
             {
                 foreach (Edge edge in river.GetEdges())
                 {
-                    _graph.AddEdge(edge);
+                    _graph.AddVerticesAndEdge(edge);
                 }
             }
 
@@ -80,17 +80,56 @@ namespace TerrainCalculator.Network
             {
                 foreach (Edge edge in lake.GetEdges())
                 {
-                    _graph.AddEdge(edge);
+                    _graph.AddVerticesAndEdge(edge);
                 }
             }
         }
 
-        public void InterpolateZ()
+        private void _interpolateZ()
         {
+            List<Node> fixedNodes = new List<Node>();
+            foreach(Node node in _graph.Vertices)
+            {
+                if (node.Elevation.IsFixed) fixedNodes.Add(node);
+            }
 
+            Func<Edge, double> edgeCost = e => e.Flat ? 0.0 : e.Distance;
+
+            foreach (Node root in fixedNodes)
+            {
+                var dfs = new DepthFirstSearchAlgorithm<Node, Edge>(_graph);
+
+                dfs.TreeEdge += (edge) =>
+                {
+                    if (!edge.Source.Elevation.IsSet) return;
+                    if (edge.Target.Elevation.IsSet)
+                    {
+                        throw new NodeException("Elevation defined in too many places", edge.Target);
+                    }
+                    if (edge.Flat)
+                    {
+                        edge.Target.Elevation.SetImplicit(edge.Source.Elevation.Value);
+                    } else
+                    {
+                        double angle = (edge.Source.RiverSlope.Value + edge.Target.RiverSlope.Value) / 2.0;
+                        double angleRad = Math.PI * angle / 180.0;
+                        double slope = Math.Tan(angleRad);
+                        double deltaZ = slope * edge.Distance;
+                        edge.Target.Elevation.SetImplicit(edge.Source.Elevation.Value + deltaZ);
+                    }
+                };
+
+                dfs.SetRootVertex(root);
+                dfs.Compute();
+            }
+
+            foreach (Node node in _graph.Vertices)
+            {
+                if (!node.Elevation.IsSet) throw new NodeException("No elevation defined for node", node);
+            }
         }
 
-        public void InterpolateValue(Node.ImplicitKey key)
+        private void _interpolateValue(Node.ImplicitKey key)
         {
             bool wasSet = true;
             while (wasSet)
@@ -101,7 +140,7 @@ namespace TerrainCalculator.Network
                     List<List<Node>> chains = lake.GetChains(key);
                     foreach (List<Node> chain in chains)
                     {
-                        interpolateChainValue(chain, key);
+                        _interpolateChainValue(chain, key);
                         wasSet = true;
                     }
                 }
@@ -128,20 +167,26 @@ namespace TerrainCalculator.Network
                     List<List<Node>> chains = river.GetChains(key);
                     foreach (List<Node> chain in chains)
                     {
-                        interpolateChainValue(chain, key);
+                        _interpolateChainValue(chain, key);
                         wasSet = true;
                     }
                     chains = river.GetEndpointChains(key);
                     foreach (List<Node> chain in chains)
                     {
-                        interpolateEndpointChainValue(chain, key);
+                        _interpolateEndpointChainValue(chain, key);
                         wasSet = true;
                     }
                 }
             }
+
+            foreach (Node node in _graph.Vertices)
+            {
+                
+                if (!node.ImplicitValues[key].IsSet) throw new NodeException($"No {key.ToString()} value was set", node);
+            }
         }
 
-        private void interpolateChainValue(List<Node> chain, Node.ImplicitKey key)
+        private void _interpolateChainValue(List<Node> chain, Node.ImplicitKey key)
         {
             double totalDistance = 0;
             foreach (int i in Enumerable.Range(0, chain.Count - 1))
@@ -170,16 +215,20 @@ namespace TerrainCalculator.Network
                 if (edge == null) throw new IndexOutOfRangeException("Could not find edge for chain");
                 cumDistance += edge.Distance;
                 double t = cumDistance / totalDistance;
-                end.ImplicitValues[key].SetImplicit(t * endValue + (1 - t) * startValue);
+                FlagDouble value = end.ImplicitValues[key];
+                if (value.IsSet) throw new NodeException($"{key.ToString()} defined multiple times", end);
+                value.SetImplicit(t * endValue + (1 - t) * startValue);
             }
         }
 
-        private void interpolateEndpointChainValue(List<Node> chain, Node.ImplicitKey key)
+        private void _interpolateEndpointChainValue(List<Node> chain, Node.ImplicitKey key)
         {
             double value = chain[0].ImplicitValues[key].Value;
-            foreach (int i in Enumerable.Range(1, chain.Count - 1))
+            foreach (Node node in chain.GetRange(1, chain.Count - 1))
             {
-                chain[i].ImplicitValues[key].SetImplicit(value);
+                FlagDouble implicitValue = node.ImplicitValues[key];
+                if (implicitValue.IsSet) throw new NodeException($"{key.ToString()} defined multiple times", node);
+                node.ImplicitValues[key].SetImplicit(value);
             }
         }
     }

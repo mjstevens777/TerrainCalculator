@@ -30,6 +30,12 @@ namespace TerrainCalculator.Network
 					Nodes.Add(Net.NewNode());
                 }
 
+				//  5
+				//  4   River
+				//  1
+				// 2 0  Lake
+				//  3
+
 				Nodes[0].Pos.x = 100;
 				Nodes[0].Pos.y = 0;
 				Nodes[0].SetDefault();
@@ -70,19 +76,93 @@ namespace TerrainCalculator.Network
 		{
 			TestNet testNet = new TestNet();
 
-			Network net = testNet.Net;
-			net.BuildGraph();
-			net.InterpolateValue(Node.ImplicitKey.Slope);
-			net.InterpolateValue(Node.ImplicitKey.Width);
-			net.InterpolateValue(Node.ImplicitKey.Depth);
-			net.InterpolateZ();
+			var expectedValues = new Dictionary<Node.ImplicitKey, List<double>>();
 
+			// RiverWidth
+			// Set the lake to the same value, then interpolate the river
+			//   60
+			//   50
+			//   40
+			// 40  40
+			//   40
+			testNet.Nodes[0].RiverWidth.SetFixed(40);
+			testNet.Nodes[5].RiverWidth.SetFixed(60);
+			expectedValues[Node.ImplicitKey.RiverWidth] =
+				new List<double> { 40, 40, 40, 40, 50, 60 };
+
+			// ShoreWidth
+			// Set the lake to the same value, then interpolate the river
+			//   50
+			//   50
+			//   50
+			// 60  40
+			//   50
+			testNet.Nodes[0].ShoreWidth.SetFixed(40);
+			testNet.Nodes[2].ShoreWidth.SetFixed(60);
+			expectedValues[Node.ImplicitKey.ShoreWidth] =
+				new List<double> { 40, 50, 60, 50, 50, 50 };
+
+			testNet.Nodes[0].ShoreDepth.SetFixed(10);
+			expectedValues[Node.ImplicitKey.ShoreDepth] =
+				new List<double> { 10, 10, 10, 10, 10, 10 };
+
+			testNet.Nodes[0].Elevation.SetFixed(40);
+			expectedValues[Node.ImplicitKey.Elevation] =
+				new List<double> { 40, 40, 40, 40, 40, 40 };
+
+			testNet.Nodes[0].ShoreDepth.SetFixed(10);
+			expectedValues[Node.ImplicitKey.ShoreDepth] =
+				new List<double> { 10, 10, 10, 10, 10, 10 };
+			testNet.Nodes[0].RiverSlope.SetFixed(2);
+			expectedValues[Node.ImplicitKey.RiverSlope] =
+				new List<double> { 2, 2, 2, 2, 2, 2 };
+
+			testNet.Nodes[0].Elevation.SetFixed(40);
+			// tan(2 degrees) * segment length
+            // segment length = 144.239705
+			double deltaZ = 5.036961;
+			expectedValues[Node.ImplicitKey.Elevation] =
+				new List<double> { 40, 40, 40, 40, 40 + deltaZ, 40 + 2 * deltaZ };
+
+			Network net = testNet.Net;
+			net.InterpolateAll();
+
+			double delta = 0.0001;
 			foreach (Node node in testNet.Nodes.GetRange(1, 5))
             {
-				Assert.IsTrue(node.Slope.IsImplicit);
-				Assert.IsTrue(node.Width.IsImplicit);
-				Assert.IsTrue(node.Depth.IsImplicit);
+				foreach (var item in expectedValues)
+				{
+					var key = item.Key;
+					var values = item.Value;
+					for (int i = 0; i < testNet.Nodes.Count; i++)
+					{
+						Assert.That(
+							testNet.Nodes[i].ImplicitValues[key].Value,
+							Is.EqualTo(values[i]).Within(delta),
+							$"Node {i} value {key}");
+					}
+				}
 			}
+		}
+
+		[Test]
+		public void TestRunTwice()
+		{
+			TestNet testNet = new TestNet();
+
+			Network net = testNet.Net;
+
+			testNet.Nodes[0].RiverSlope.SetFixed(2);
+			net.InterpolateAll();
+			Assert.That(
+				testNet.Nodes[5].RiverSlope.Value,
+				Is.EqualTo(2));
+
+			testNet.Nodes[0].RiverSlope.SetFixed(3);
+			net.InterpolateAll();
+			Assert.That(
+				testNet.Nodes[5].RiverSlope.Value,
+				Is.EqualTo(3));
 		}
 	}
 }

@@ -41,42 +41,50 @@ namespace TerrainCalculator.Network
 
 			float delta = 0.0001f;
 			float diag = 62.5f;
+			float edgeLength = 148.60828f;
 			Vector2 p;
 
-			l1.SetDirections();
-			p = l1.Interpolate2d(0f);
+			var edges = l1.GetEdges();
+
+			foreach(Edge edge in edges)
+            {
+				Assert.That(edge.InterpPoints.Count, Is.EqualTo(Path.NumSegments + 1));
+				Assert.That(edge.Distance, Is.EqualTo(edgeLength).Within(delta));
+			}
+
+			p = edges[0].InterpPoints[0];
 			Assert.That(p.x, Is.EqualTo(100f).Within(delta));
 			Assert.That(p.y, Is.EqualTo(0f).Within(delta));
 
-			p = l1.Interpolate2d(0.5f);
+			p = edges[0].InterpPoints[Path.NumSegments / 2];
 			Assert.That(p.x, Is.EqualTo(diag).Within(delta));
 			Assert.That(p.y, Is.EqualTo(diag).Within(delta));
 
-			p = l1.Interpolate2d(1f);
+			p = edges[0].InterpPoints[Path.NumSegments];
 			Assert.That(p.x, Is.EqualTo(0f).Within(delta));
 			Assert.That(p.y, Is.EqualTo(100f).Within(delta));
 
-			p = l1.Interpolate2d(1.5f);
+			p = edges[1].InterpPoints[Path.NumSegments / 2];
 			Assert.That(p.x, Is.EqualTo(-diag).Within(delta));
 			Assert.That(p.y, Is.EqualTo(diag).Within(delta));
 
-			p = l1.Interpolate2d(2f);
+			p = edges[1].InterpPoints[Path.NumSegments];
 			Assert.That(p.x, Is.EqualTo(-100f).Within(delta));
 			Assert.That(p.y, Is.EqualTo(0f).Within(delta));
 
-			p = l1.Interpolate2d(2.5f);
+			p = edges[2].InterpPoints[Path.NumSegments / 2];
 			Assert.That(p.x, Is.EqualTo(-diag).Within(delta));
 			Assert.That(p.y, Is.EqualTo(-diag).Within(delta));
 
-			p = l1.Interpolate2d(3f);
+			p = edges[2].InterpPoints[Path.NumSegments];
 			Assert.That(p.x, Is.EqualTo(0f).Within(delta));
 			Assert.That(p.y, Is.EqualTo(-100f).Within(delta));
 
-			p = l1.Interpolate2d(3.5f);
+			p = edges[3].InterpPoints[Path.NumSegments / 2];
 			Assert.That(p.x, Is.EqualTo(diag).Within(delta));
 			Assert.That(p.y, Is.EqualTo(-diag).Within(delta));
 
-			p = l1.Interpolate2d(4f);
+			p = edges[3].InterpPoints[Path.NumSegments];
 			Assert.That(p.x, Is.EqualTo(100f).Within(delta));
 			Assert.That(p.y, Is.EqualTo(0f).Within(delta));
 		}

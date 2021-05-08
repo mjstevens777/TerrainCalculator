@@ -9,10 +9,11 @@ namespace TerrainCalculator.Network
     {
         public enum ImplicitKey
         {
-            Z,
-            Width,
-            Depth,
-            Slope
+            Elevation,
+            ShoreWidth,
+            ShoreDepth,
+            RiverWidth,
+            RiverSlope
         }
 
         Network _network;
@@ -32,58 +33,68 @@ namespace TerrainCalculator.Network
             Pos = new Vector2(0, 0);
             Grad = new Vector2(0, 0);
             ImplicitValues = new Dictionary<ImplicitKey, FlagDouble>();
-            ImplicitValues[ImplicitKey.Z] = new FlagDouble();
-            ImplicitValues[ImplicitKey.Width] = new FlagDouble();
-            ImplicitValues[ImplicitKey.Depth] = new FlagDouble();
-            ImplicitValues[ImplicitKey.Slope] = new FlagDouble();
+            ImplicitValues[ImplicitKey.Elevation] = new FlagDouble();
+            ImplicitValues[ImplicitKey.ShoreWidth] = new FlagDouble();
+            ImplicitValues[ImplicitKey.ShoreDepth] = new FlagDouble();
+            ImplicitValues[ImplicitKey.RiverWidth] = new FlagDouble();
+            ImplicitValues[ImplicitKey.RiverSlope] = new FlagDouble();
         }
 
-        public FlagDouble Z
+        public FlagDouble Elevation
         {
-            get => ImplicitValues[ImplicitKey.Z];
+            get => ImplicitValues[ImplicitKey.Elevation];
         }
 
-        public FlagDouble Width
+        public FlagDouble ShoreWidth
         {
-            get => ImplicitValues[ImplicitKey.Width];
+            get => ImplicitValues[ImplicitKey.ShoreWidth];
         }
 
-        public FlagDouble Depth
+        public FlagDouble ShoreDepth
         {
-            get => ImplicitValues[ImplicitKey.Depth];
+            get => ImplicitValues[ImplicitKey.ShoreDepth];
         }
 
-        public FlagDouble Slope
+        public FlagDouble RiverWidth
         {
-            get => ImplicitValues[ImplicitKey.Slope];
+            get => ImplicitValues[ImplicitKey.RiverWidth];
+        }
+
+        public FlagDouble RiverSlope
+        {
+            get => ImplicitValues[ImplicitKey.RiverSlope];
         }
 
         public void SetDefault()
         {
-            Z.SetFixed(40);
-            Width.SetFixed(40);
-            Depth.SetFixed(10);
-            Slope.SetFixed(1);
+            Elevation.SetFixed(40);
+            ShoreWidth.SetFixed(10);
+            ShoreDepth.SetFixed(10);
+            RiverWidth.SetFixed(20);
+            RiverSlope.SetFixed(2);
         }
 
         public void ResetImplicit()
         {
-            Z.ResetImplicit();
-            Width.ResetImplicit();
-            Depth.ResetImplicit();
-            Slope.ResetImplicit();
+            Elevation.ResetImplicit();
+            ShoreWidth.ResetImplicit();
+            ShoreDepth.ResetImplicit();
+            RiverWidth.ResetImplicit();
+            RiverSlope.ResetImplicit();
         }
     }
 
     public class Edge : QuikGraph.Edge<Node>
     {
-        List<Vector2> InterpPoints;
+        public List<Vector2> InterpPoints;
+        public bool Flat;
         private double? _distance;
 
-        public Edge(Node source, Node target, List<Vector2> interp)
+        public Edge(Node source, Node target, List<Vector2> interp, bool flat)
             : base(source, target)
         {
             InterpPoints = interp;
+            Flat = flat;
         }
 
         public double Distance
