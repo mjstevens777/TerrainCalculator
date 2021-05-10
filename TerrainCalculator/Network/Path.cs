@@ -54,7 +54,7 @@ namespace TerrainCalculator.Network
             return edges;
         }
 
-        public List<List<Node>> GetChains(Node.ImplicitKey key)
+        public List<List<Node>> GetChains(Node.Key key)
         {
             List<List<Node>> chains = new List<List<Node>>();
 
@@ -89,7 +89,7 @@ namespace TerrainCalculator.Network
             return chains;
         }
 
-        public List<List<Node>> GetEndpointChains(Node.ImplicitKey key)
+        public List<List<Node>> GetEndpointChains(Node.Key key)
         {
             List<List<Node>> chains = new List<List<Node>>();
 

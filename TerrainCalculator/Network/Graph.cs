@@ -7,7 +7,7 @@ namespace TerrainCalculator.Network
 {
     public class Node
     {
-        public enum ImplicitKey
+        public enum Key
         {
             Elevation,
             ShoreWidth,
@@ -25,44 +25,44 @@ namespace TerrainCalculator.Network
         public bool IsDirty;
 
         // Control parameters
-        public Dictionary<ImplicitKey, FlagDouble> ImplicitValues;
+        public Dictionary<Key, FlagDouble> ImplicitValues;
 
         public Node(WaterNetwork network)
         {
             _network = network;
             Pos = new Vector2(0, 0);
             Grad = new Vector2(0, 0);
-            ImplicitValues = new Dictionary<ImplicitKey, FlagDouble>();
-            ImplicitValues[ImplicitKey.Elevation] = new FlagDouble();
-            ImplicitValues[ImplicitKey.ShoreWidth] = new FlagDouble();
-            ImplicitValues[ImplicitKey.ShoreDepth] = new FlagDouble();
-            ImplicitValues[ImplicitKey.RiverWidth] = new FlagDouble();
-            ImplicitValues[ImplicitKey.RiverSlope] = new FlagDouble();
+            ImplicitValues = new Dictionary<Key, FlagDouble>();
+            ImplicitValues[Key.Elevation] = new FlagDouble();
+            ImplicitValues[Key.ShoreWidth] = new FlagDouble();
+            ImplicitValues[Key.ShoreDepth] = new FlagDouble();
+            ImplicitValues[Key.RiverWidth] = new FlagDouble();
+            ImplicitValues[Key.RiverSlope] = new FlagDouble();
         }
 
         public FlagDouble Elevation
         {
-            get => ImplicitValues[ImplicitKey.Elevation];
+            get => ImplicitValues[Key.Elevation];
         }
 
         public FlagDouble ShoreWidth
         {
-            get => ImplicitValues[ImplicitKey.ShoreWidth];
+            get => ImplicitValues[Key.ShoreWidth];
         }
 
         public FlagDouble ShoreDepth
         {
-            get => ImplicitValues[ImplicitKey.ShoreDepth];
+            get => ImplicitValues[Key.ShoreDepth];
         }
 
         public FlagDouble RiverWidth
         {
-            get => ImplicitValues[ImplicitKey.RiverWidth];
+            get => ImplicitValues[Key.RiverWidth];
         }
 
         public FlagDouble RiverSlope
         {
-            get => ImplicitValues[ImplicitKey.RiverSlope];
+            get => ImplicitValues[Key.RiverSlope];
         }
 
         public void SetDefault()

@@ -76,7 +76,7 @@ namespace TerrainCalculator.Network
 		{
 			TestNet testNet = new TestNet();
 
-			var expectedValues = new Dictionary<Node.ImplicitKey, List<double>>();
+			var expectedValues = new Dictionary<Node.Key, List<double>>();
 
 			// RiverWidth
 			// Set the lake to the same value, then interpolate the river
@@ -87,7 +87,7 @@ namespace TerrainCalculator.Network
 			//   40
 			testNet.Nodes[0].RiverWidth.SetFixed(40);
 			testNet.Nodes[5].RiverWidth.SetFixed(60);
-			expectedValues[Node.ImplicitKey.RiverWidth] =
+			expectedValues[Node.Key.RiverWidth] =
 				new List<double> { 40, 40, 40, 40, 50, 60 };
 
 			// ShoreWidth
@@ -99,29 +99,29 @@ namespace TerrainCalculator.Network
 			//   50
 			testNet.Nodes[0].ShoreWidth.SetFixed(40);
 			testNet.Nodes[2].ShoreWidth.SetFixed(60);
-			expectedValues[Node.ImplicitKey.ShoreWidth] =
+			expectedValues[Node.Key.ShoreWidth] =
 				new List<double> { 40, 50, 60, 50, 50, 50 };
 
 			testNet.Nodes[0].ShoreDepth.SetFixed(10);
-			expectedValues[Node.ImplicitKey.ShoreDepth] =
+			expectedValues[Node.Key.ShoreDepth] =
 				new List<double> { 10, 10, 10, 10, 10, 10 };
 
 			testNet.Nodes[0].Elevation.SetFixed(40);
-			expectedValues[Node.ImplicitKey.Elevation] =
+			expectedValues[Node.Key.Elevation] =
 				new List<double> { 40, 40, 40, 40, 40, 40 };
 
 			testNet.Nodes[0].ShoreDepth.SetFixed(10);
-			expectedValues[Node.ImplicitKey.ShoreDepth] =
+			expectedValues[Node.Key.ShoreDepth] =
 				new List<double> { 10, 10, 10, 10, 10, 10 };
 			testNet.Nodes[0].RiverSlope.SetFixed(2);
-			expectedValues[Node.ImplicitKey.RiverSlope] =
+			expectedValues[Node.Key.RiverSlope] =
 				new List<double> { 2, 2, 2, 2, 2, 2 };
 
 			testNet.Nodes[0].Elevation.SetFixed(40);
 			// tan(2 degrees) * segment length
             // segment length = 144.239705
 			double deltaZ = 5.036961;
-			expectedValues[Node.ImplicitKey.Elevation] =
+			expectedValues[Node.Key.Elevation] =
 				new List<double> { 40, 40, 40, 40, 40 + deltaZ, 40 + 2 * deltaZ };
 
 			WaterNetwork net = testNet.Net;

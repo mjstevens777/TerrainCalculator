@@ -57,10 +57,10 @@ namespace TerrainCalculator.Network
             {
                 node.ResetImplicit();
             }
-            _interpolateValue(Node.ImplicitKey.ShoreWidth);
-            _interpolateValue(Node.ImplicitKey.ShoreDepth);
-            _interpolateValue(Node.ImplicitKey.RiverWidth);
-            _interpolateValue(Node.ImplicitKey.RiverSlope);
+            _interpolateValue(Node.Key.ShoreWidth);
+            _interpolateValue(Node.Key.ShoreDepth);
+            _interpolateValue(Node.Key.RiverWidth);
+            _interpolateValue(Node.Key.RiverSlope);
             _interpolateZ();
         }
 
@@ -129,7 +129,7 @@ namespace TerrainCalculator.Network
             }
         }
 
-        private void _interpolateValue(Node.ImplicitKey key)
+        private void _interpolateValue(Node.Key key)
         {
             bool wasSet = true;
             while (wasSet)
@@ -186,7 +186,7 @@ namespace TerrainCalculator.Network
             }
         }
 
-        private void _interpolateChainValue(List<Node> chain, Node.ImplicitKey key)
+        private void _interpolateChainValue(List<Node> chain, Node.Key key)
         {
             double totalDistance = 0;
             foreach (int i in Enumerable.Range(0, chain.Count - 1))
@@ -221,7 +221,7 @@ namespace TerrainCalculator.Network
             }
         }
 
-        private void _interpolateEndpointChainValue(List<Node> chain, Node.ImplicitKey key)
+        private void _interpolateEndpointChainValue(List<Node> chain, Node.Key key)
         {
             double value = chain[0].ImplicitValues[key].Value;
             foreach (Node node in chain.GetRange(1, chain.Count - 1))
