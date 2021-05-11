@@ -6,6 +6,7 @@ using QuikGraph;
 using QuikGraph.Algorithms;
 using QuikGraph.Algorithms.Search;
 using QuikGraph.Algorithms.ShortestPath;
+using UnityEngine;
 
 namespace TerrainCalculator.Network
 {
@@ -111,10 +112,10 @@ namespace TerrainCalculator.Network
                         edge.Target.Elevation.SetImplicit(edge.Source.Elevation.Value);
                     } else
                     {
-                        double angle = (edge.Source.RiverSlope.Value + edge.Target.RiverSlope.Value) / 2.0;
-                        double angleRad = Math.PI * angle / 180.0;
-                        double slope = Math.Tan(angleRad);
-                        double deltaZ = slope * edge.Distance;
+                        float angle = (edge.Source.RiverSlope.Value + edge.Target.RiverSlope.Value) / 2.0f;
+                        float angleRad = Mathf.Deg2Rad * angle;
+                        float slope = Mathf.Tan(angleRad);
+                        float deltaZ = slope * edge.Distance;
                         edge.Target.Elevation.SetImplicit(edge.Source.Elevation.Value + deltaZ);
                     }
                 };
@@ -148,21 +149,21 @@ namespace TerrainCalculator.Network
                 int maxNumSet = 1; // Ignore chains with no value set
                 foreach (River river in _rivers)
                 {
-                    bool firstSet = river[0].ImplicitValues[key].IsSet;
-                    bool lastSet = river[river.Count - 1].ImplicitValues[key].IsSet;
+                    bool firstSet = river.First.ImplicitValues[key].IsSet;
+                    bool lastSet = river.Last.ImplicitValues[key].IsSet;
                     int numSet = 0;
-                    if (river[0].ImplicitValues[key].IsSet) numSet++;
-                    if (river[river.Count - 1].ImplicitValues[key].IsSet) numSet++;
+                    if (river.First.ImplicitValues[key].IsSet) numSet++;
+                    if (river.Last.ImplicitValues[key].IsSet) numSet++;
                     if (numSet > maxNumSet) maxNumSet = numSet;
                 }
 
                 foreach (River river in _rivers)
                 {
-                    bool firstSet = river[0].ImplicitValues[key].IsSet;
-                    bool lastSet = river[river.Count - 1].ImplicitValues[key].IsSet;
+                    bool firstSet = river.Nodes[0].ImplicitValues[key].IsSet;
+                    bool lastSet = river.Nodes[river.Nodes.Count - 1].ImplicitValues[key].IsSet;
                     int numSet = 0;
-                    if (river[0].ImplicitValues[key].IsSet) numSet++;
-                    if (river[river.Count - 1].ImplicitValues[key].IsSet) numSet++;
+                    if (river.First.ImplicitValues[key].IsSet) numSet++;
+                    if (river.Last.ImplicitValues[key].IsSet) numSet++;
                     if (numSet < maxNumSet) continue;
                     List<List<Node>> chains = river.GetChains(key);
                     foreach (List<Node> chain in chains)
@@ -188,7 +189,7 @@ namespace TerrainCalculator.Network
 
         private void _interpolateChainValue(List<Node> chain, Node.Key key)
         {
-            double totalDistance = 0;
+            float totalDistance = 0;
             foreach (int i in Enumerable.Range(0, chain.Count - 1))
             {
                 Node start = chain[i];
@@ -202,10 +203,10 @@ namespace TerrainCalculator.Network
                 if (edge == null) throw new IndexOutOfRangeException("Could not find edge for chain");
                 totalDistance += edge.Distance;
             }
-            double startValue = chain[0].ImplicitValues[key].Value;
-            double endValue = chain[chain.Count - 1].ImplicitValues[key].Value;
+            float startValue = chain[0].ImplicitValues[key].Value;
+            float endValue = chain[chain.Count - 1].ImplicitValues[key].Value;
 
-            double cumDistance = 0;
+            float cumDistance = 0;
             foreach (int i in Enumerable.Range(0, chain.Count - 2))
             {
                 Node start = chain[i];
@@ -214,7 +215,7 @@ namespace TerrainCalculator.Network
                 _graph.TryGetEdge(start, end, out edge);
                 if (edge == null) throw new IndexOutOfRangeException("Could not find edge for chain");
                 cumDistance += edge.Distance;
-                double t = cumDistance / totalDistance;
+                float t = cumDistance / totalDistance;
                 FlagDouble value = end.ImplicitValues[key];
                 if (value.IsSet) throw new NodeException($"{key.ToString()} defined multiple times", end);
                 value.SetImplicit(t * endValue + (1 - t) * startValue);
@@ -223,7 +224,7 @@ namespace TerrainCalculator.Network
 
         private void _interpolateEndpointChainValue(List<Node> chain, Node.Key key)
         {
-            double value = chain[0].ImplicitValues[key].Value;
+            float value = chain[0].ImplicitValues[key].Value;
             foreach (Node node in chain.GetRange(1, chain.Count - 1))
             {
                 FlagDouble implicitValue = node.ImplicitValues[key];

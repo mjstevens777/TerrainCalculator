@@ -5,50 +5,41 @@ using UnityEngine;
 
 namespace TerrainCalculator.Network
 {
-    public class Path : List<Node>
+    public class Path
     {
 
         WaterNetwork _network;
         public const int NumSegments = 30;
+        public bool IsDirty { get; set; }
+        public List<Node> Nodes;
+        private List<Vector2> _grads;
 
-        public Path(WaterNetwork network) : base()
+        public Path(WaterNetwork network)
         {
             _network = network;
-        }
-
-        private bool _isDirty;
-        public bool IsDirty
-        {
-            get
-            {
-                if (_isDirty) return true;
-                foreach (Node node in this)
-                {
-                    if (node.IsDirty) return true;
-                }
-                return false;
-            }
-            set => _isDirty = value;
+            Nodes = new List<Node>();
+            _grads = new List<Vector2>();
         }
 
         public virtual List<Edge> GetEdges()
         {
             _setDirections();
             List<Edge> edges = new List<Edge>();
-            foreach (int i in Enumerable.Range(0, Count))
+            foreach (int i in Enumerable.Range(0, Nodes.Count))
             {
-                Node left = _getNodeInBounds(i);
-                Node right = _getNodeInBounds(i + 1);
-                if (right == null) { break; }
+                int left = _wrapIndex(i);
+                int right = _wrapIndex(i + 1);
+                if (right < 0) { break; }
 
                 List<Vector2> interp = new List<Vector2>();
-                Vector2 current = left.Pos;
+                Vector2 current = Nodes[left].Pos;
                 foreach (int j in Enumerable.Range(0, NumSegments + 1))
                 {
                     float t = i + (j / (float)NumSegments);
                     interp.Add(_interpolate2d(t));
                 }
-                Edge edge = new Edge(left, right, interp, false);
+                // NOTE: Bidirectionality handled in network class
+                Edge edge = new Edge(Nodes[left], Nodes[right], interp, false);
                 edges.Add(edge);
             }
             return edges;
@@ -59,9 +50,9 @@ namespace TerrainCalculator.Network
             List<List<Node>> chains = new List<List<Node>>();
 
             List<int> setIndices = new List<int>();
-            foreach (int i in Enumerable.Range(0, Count))
+            foreach (int i in Enumerable.Range(0, Nodes.Count))
             {
-                Node node = this[i];
+                Node node = Nodes[i];
                 if (node.ImplicitValues[key].IsSet)
                 {
                     setIndices.Add(i);
@@ -71,12 +62,13 @@ namespace TerrainCalculator.Network
             foreach (int start in setIndices)
             {
                 List<Node> chain = new List<Node>();
-                chain.Add(this[start]);
+                chain.Add(Nodes[start]);
                 int i = start + 1;
                 while (true)
                 {
-                    Node node = _getNodeInBounds(i);
-                    if (node == null) break;
+                    i = _wrapIndex(i);
+                    if (i < 0) break;
+                    Node node = Nodes[i];
                     chain.Add(node);
                     if (node.ImplicitValues[key].IsSet) break;
                     i++;
@@ -96,9 +88,9 @@ namespace TerrainCalculator.Network
             int firstSet = -1;
             int lastSet = -1;
 
-            foreach (int i in Enumerable.Range(0, Count))
+            for(int i = 0; i < Nodes.Count; i++)
             {
-                Node node = this[i];
+                Node node = Nodes[i];
                 if (node.ImplicitValues[key].IsSet)
                 {
                     if (firstSet == -1) firstSet = i;
@@ -110,13 +102,13 @@ namespace TerrainCalculator.Network
 
             if (firstSet > 0)
             {
-                List<Node> chain = GetRange(0, firstSet + 1);
+                List<Node> chain = Nodes.GetRange(0, firstSet + 1);
                 chain.Reverse();
                 chains.Add(chain);
             }
-            if (lastSet < Count - 1)
+            if (lastSet < Nodes.Count - 1)
             {
-                List<Node> chain = GetRange(lastSet, Count - lastSet);
+                List<Node> chain = Nodes.GetRange(lastSet, Nodes.Count - lastSet);
                 chains.Add(chain);
             }
 
@@ -127,52 +119,52 @@ namespace TerrainCalculator.Network
         {
             int i = Mathf.FloorToInt(t);
             t = t - i;
-            Node left = _getNodeInBounds(i);
-            Node right = _getNodeInBounds(i + 1);
+            int left = _wrapIndex(i);
+            int right = _wrapIndex(i + 1);
 
-            if (t == 0) { return left.Pos; }
-            if (right == null) { throw new IndexOutOfRangeException("Path interpolation out of bounds"); }
+            if (t == 0) { return Nodes[left].Pos; }
+            if (right < 0) { throw new IndexOutOfRangeException("Path interpolation out of bounds"); }
 
             float t2 = t * t;
             float t3 = t2 * t;
             return (
-                (2f * t3 - 3f * t2 + 1f) * left.Pos +
-                (t3 - 2f * t2 + t) * left.Grad +
-                (-2f * t3 + 3f * t2) * right.Pos +
-                (t3 - t2) * right.Grad
+                (2f * t3 - 3f * t2 + 1f) * Nodes[left].Pos +
+                (t3 - 2f * t2 + t) * _grads[left] +
+                (-2f * t3 + 3f * t2) * Nodes[right].Pos +
+                (t3 - t2) * _grads[right]
             );
         }
 
         private void _setDirections()
         {
-            foreach(int i in Enumerable.Range(0, Count))
+            _grads.Clear();
+            for (int index = 0; index < Nodes.Count; index++)
             {
-                _setDirection(i);
+                _grads.Add(Vector2.zero);
+                _setDirection(index);
             }
         }
 
         private void _setDirection(int index)
         {
-            Node node = _getNodeInBounds(index);
-            Node left = _getNodeInBounds(index - 1);
-            Node right = _getNodeInBounds(index + 1);
-            if (left == null || right == null)
+            int left = _wrapIndex(index - 1);
+            int right = _wrapIndex(index + 1);
+            if (left < 0 || right < 0)
             {
-                node.Grad.Set(0f, 0f);
                 return;
             }
-            node.Grad = (right.Pos - left.Pos) / 2f;
+            _grads[index] = (Nodes[right].Pos - Nodes[left].Pos) / 2f;
         }
 
-        protected virtual Node _getNodeInBounds(int index)
+        protected virtual int _wrapIndex(int index)
         {
-            if (index >= 0 && index < Count)
+            if (index >= 0 && index < Nodes.Count)
             {
-                return this[index];
+                return index;
             }
             else
             {
-                return null;
+                return -1;
             }
         }
     }

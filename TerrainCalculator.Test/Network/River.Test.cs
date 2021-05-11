@@ -22,17 +22,17 @@ namespace TerrainCalculator.Network
 			n1.Pos.x = 100;
 			n1.Pos.y = 0;
 			n1.SetDefault();
-			r1.Add(n1);
+			r1.Nodes.Add(n1);
 
 			Node n2 = net.NewNode();
 			n2.Pos.x = 0;
 			n2.Pos.y = 100;
-			r1.Add(n2);
+			r1.Nodes.Add(n2);
 
 			Node n3 = net.NewNode();
 			n3.Pos.x = -100;
 			n3.Pos.y = 0;
-			r1.Add(n3);
+			r1.Nodes.Add(n3);
 
 			Vector2 p;
 			float delta = 0.0001f;

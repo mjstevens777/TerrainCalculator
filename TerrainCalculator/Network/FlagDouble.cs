@@ -3,20 +3,20 @@ namespace TerrainCalculator.Network
 {
     public class FlagDouble
     {
-        public double Value { get; set; }
+        public float Value { get; set; }
         public bool IsFixed { get; set; }
         public bool IsImplicit { get; set; }
 
         public bool IsSet { get => IsFixed || IsImplicit; }
 
-        public void SetFixed(double value)
+        public void SetFixed(float value)
         {
             Value = value;
             IsFixed = true;
             IsImplicit = false;
         }
 
-        public void SetImplicit(double value)
+        public void SetImplicit(float value)
         {
             if (IsFixed)
             {

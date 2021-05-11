@@ -9,9 +9,10 @@ namespace TerrainCalculator.Network
         {
         }
 
-        protected override Node _getNodeInBounds(int index)
+        protected override int _wrapIndex(int index)
         {
-            return this[mod(index, Count)];
+            int c = Nodes.Count;
+            return (index % c + c) % c;
         }
 
         // https://stackoverflow.com/a/1082938/5945112

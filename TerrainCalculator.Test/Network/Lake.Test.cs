@@ -23,22 +23,22 @@ namespace TerrainCalculator.Test
 			n1.Pos.x = 100;
 			n1.Pos.y = 0;
 			n1.SetDefault();
-			l1.Add(n1);
+			l1.Nodes.Add(n1);
 
 			Node n2 = net.NewNode();
 			n2.Pos.x = 0;
 			n2.Pos.y = 100;
-			l1.Add(n2);
+			l1.Nodes.Add(n2);
 
 			Node n3 = net.NewNode();
 			n3.Pos.x = -100;
 			n3.Pos.y = 0;
-			l1.Add(n3);
+			l1.Nodes.Add(n3);
 
 			Node n4 = net.NewNode();
 			n4.Pos.x = 0;
 			n4.Pos.y = -100;
-			l1.Add(n4);
+			l1.Nodes.Add(n4);
 
 			float delta = 0.0001f;
 			float diag = 62.5f;

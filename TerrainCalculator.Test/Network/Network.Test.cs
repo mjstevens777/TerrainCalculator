@@ -39,30 +39,30 @@ namespace TerrainCalculator.Network
 				Nodes[0].Pos.x = 100;
 				Nodes[0].Pos.y = 0;
 				Nodes[0].SetDefault();
-				Lakes[0].Add(Nodes[0]);
+				Lakes[0].Nodes.Add(Nodes[0]);
 
 				Nodes[1].Pos.x = 0;
 				Nodes[1].Pos.y = 100;
-				Lakes[0].Add(Nodes[1]);
+				Lakes[0].Nodes.Add(Nodes[1]);
 
 				Nodes[2].Pos.x = -100;
 				Nodes[2].Pos.y = 0;
-				Lakes[0].Add(Nodes[2]);
+				Lakes[0].Nodes.Add(Nodes[2]);
 
 				Nodes[3].Pos.x = 0;
 				Nodes[3].Pos.y = -100;
-				Lakes[0].Add(Nodes[3]);
+				Lakes[0].Nodes.Add(Nodes[3]);
 
 				
-				Rivers[0].Add(Nodes[1]);
+				Rivers[0].Nodes.Add(Nodes[1]);
 
 				Nodes[4].Pos.x = 100;
 				Nodes[4].Pos.y = 200;
-				Rivers[0].Add(Nodes[4]);
+				Rivers[0].Nodes.Add(Nodes[4]);
 
 				Nodes[5].Pos.x = 0;
 				Nodes[5].Pos.y = 300;
-				Rivers[0].Add(Nodes[5]);
+				Rivers[0].Nodes.Add(Nodes[5]);
 			}
         }
 

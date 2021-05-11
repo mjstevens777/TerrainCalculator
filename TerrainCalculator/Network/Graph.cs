@@ -19,10 +19,7 @@ namespace TerrainCalculator.Network
         WaterNetwork _network;
         public Vector2 Pos;
 
-        // Interpolation gradient
-        public Vector2 Grad;
-
-        public bool IsDirty;
+        public bool IsDirty { get; set; }
 
         // Control parameters
         public Dictionary<Key, FlagDouble> ImplicitValues;
@@ -31,7 +28,6 @@ namespace TerrainCalculator.Network
         {
             _network = network;
             Pos = new Vector2(0, 0);
-            Grad = new Vector2(0, 0);
             ImplicitValues = new Dictionary<Key, FlagDouble>();
             ImplicitValues[Key.Elevation] = new FlagDouble();
             ImplicitValues[Key.ShoreWidth] = new FlagDouble();
@@ -88,7 +84,7 @@ namespace TerrainCalculator.Network
     {
         public List<Vector2> InterpPoints;
         public bool Flat;
-        private double? _distance;
+        private float? _distance;
 
         public Edge(Node source, Node target, List<Vector2> interp, bool flat)
             : base(source, target)
@@ -97,12 +93,12 @@ namespace TerrainCalculator.Network
             Flat = flat;
         }
 
-        public double Distance
+        public float Distance
         {
             get
             {
-                if (_distance != null) { return (double)_distance; }
-                double sum = 0;
+                if (_distance != null) { return (float)_distance; }
+                float sum = 0;
                 foreach (int i in Enumerable.Range(0, InterpPoints.Count - 1))
                 {
                     Vector2 start = InterpPoints[i];
@@ -110,7 +106,7 @@ namespace TerrainCalculator.Network
                     sum += (end - start).magnitude;
                 }
                 _distance = sum;
-                return (double)_distance;
+                return (float)_distance;
             }
         }
     }
@@ -118,22 +114,5 @@ namespace TerrainCalculator.Network
     public class Graph: QuikGraph.BidirectionalGraph<Node, Edge>
     {
         public Graph() : base() { }
-    }
-
-    public class ComputeEdge : QuikGraph.Edge<Node>
-    {
-        public float Weight;
-
-        // source.value = sum edge.target.value * edge.weight for edge in neighbors
-        public ComputeEdge(Node source, Node target, float weight)
-            : base(source, target)
-        {
-            Weight = weight;
-        }
-    }
-
-    public class ComputeGraph : QuikGraph.AdjacencyGraph<Node, ComputeEdge>
-    {
-        public ComputeGraph() : base() { }
     }
 }
