@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using ColossalFramework.UI;
 using UnityEngine;
 
-namespace TerrainCalculator.UI
+namespace TerrainCalculator.CitiesUI
 {
     public class NodePanel
     {
@@ -60,16 +60,16 @@ namespace TerrainCalculator.UI
             thumb.spriteName = "OptionsScrollbarThumb";
             slider.thumbObject = thumb;
 
-            slider.eventValueChanged += (UIComponent c, float value) =>
-            {
-                state.OnNodeValueSet(key, value);
-            };
+            //slider.eventValueChanged += (UIComponent c, float value) =>
+            //{
+            //    state.OnNodeValueSet(key, value);
+            //};
 
-            state.eventNodeChanged += (Network.Node node) =>
-            {
-                slider.value = (float)(node.ImplicitValues[key].Value);
-                Debug.Log($"Updating UI to match {key.ToString()} = {slider.value}");
-            };
+            //state.eventImplicitValuesChanged += (Network.Node node) =>
+            //{
+            //    slider.value = (float)(node.ImplicitValues[key].Value);
+            //    Debug.Log($"Updating UI to match {key.ToString()} = {slider.value}");
+            //};
 
             return row;
 

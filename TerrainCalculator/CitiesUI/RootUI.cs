@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using ColossalFramework.UI;
 using UnityEngine;
 
-namespace TerrainCalculator.UI
+namespace TerrainCalculator.CitiesUI
 {
     public enum PanelType
     {
@@ -28,7 +28,7 @@ namespace TerrainCalculator.UI
             // Anchor to top-right
             root.anchor = UIAnchorStyle.Top | UIAnchorStyle.Right;
             root.width = _width;
-            root.relativePosition = new Vector3(
+            root.absolutePosition = new Vector3(
                 view.GetScreenResolution().x - _right - _width, _top);
             Util.DebugComponent(root);
 

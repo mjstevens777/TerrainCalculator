@@ -2,7 +2,7 @@
 using ColossalFramework.UI;
 using UnityEngine;
 
-namespace TerrainCalculator.UI
+namespace TerrainCalculator.CitiesUI
 {
     public class DefaultButton
     {

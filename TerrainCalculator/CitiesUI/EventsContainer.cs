@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TerrainCalculator.UI
+namespace TerrainCalculator.CitiesUI
 {
     public class EventsContainer
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using ColossalFramework.UI;
 using UnityEngine;
 
-namespace TerrainCalculator.UI
+namespace TerrainCalculator.CitiesUI
 {
     public class Util
     {

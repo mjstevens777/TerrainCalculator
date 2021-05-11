@@ -1,5 +1,6 @@
 ﻿using ICities;
 using TerrainCalculator.OptionsFramework;
+using TerrainCalculator.UnityUI;
 using UnityEngine;
 
 namespace TerrainCalculator
@@ -15,7 +16,9 @@ namespace TerrainCalculator
         public override void OnLevelLoaded(LoadMode mode)
         {
             base.OnLevelLoaded(mode);
-            new GameObject("TerrainCalculator").AddComponent<TerrainCalculatorBehavior>();
+
+            GameObject go = new GameObject("TerrainCalculator");
+            State state = go.AddComponent<State>();
         }
 
         public override void OnLevelUnloading()
