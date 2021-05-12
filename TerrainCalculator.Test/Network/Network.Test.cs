@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using UnityEngine;
+using TerrainCalculator.Network;
 
-namespace TerrainCalculator.Network
+namespace TerrainCalculator.Test.Network
 {
 
 	[TestFixture]

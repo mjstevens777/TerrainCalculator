@@ -2,7 +2,7 @@
 using UnityEngine;
 using TerrainCalculator.Network;
 
-namespace TerrainCalculator.Test
+namespace TerrainCalculator.Test.Network
 {
 
     [TestFixture]
