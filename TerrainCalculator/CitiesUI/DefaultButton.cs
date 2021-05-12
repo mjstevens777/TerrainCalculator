@@ -13,7 +13,7 @@ namespace TerrainCalculator.CitiesUI
             var button = parent.AddUIComponent<UIButton>() as UIButton;
             button.name = name;
             button.text = text;
-            Util.DebugComponent(button);
+            //Util.DebugComponent(button);
             button.normalBgSprite = "ButtonMenu";
             button.disabledBgSprite = "ButtonMenuDisabled";
             button.hoveredBgSprite = "ButtonMenuHovered";

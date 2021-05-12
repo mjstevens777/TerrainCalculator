@@ -20,7 +20,7 @@ namespace TerrainCalculator.CitiesUI
             panel.padding = new RectOffset(_padding, _padding, _padding, _padding);
             panel.autoLayoutPadding = new RectOffset(_padding, _padding, _padding, _padding);
             panel.name = "TCNodePanel";
-            Util.DebugComponent(panel);
+            //Util.DebugComponent(panel);
 
             _buildRow(panel, state, Network.Node.Key.RiverSlope);
             _buildRow(panel, state, Network.Node.Key.RiverWidth);

@@ -25,11 +25,7 @@ namespace TerrainCalculator.CitiesUI
             var root = view.AddUIComponent(typeof(UIPanel)) as UIPanel;
             root.backgroundSprite = "MenuPanel2";
             root.name = "TCToolPanel";
-            // Anchor to top-right
-            root.anchor = UIAnchorStyle.Top | UIAnchorStyle.Right;
             root.width = _width;
-            root.absolutePosition = new Vector3(
-                view.GetScreenResolution().x - _right - _width, _top);
             Util.DebugComponent(root);
 
             var titlePanel = root.AddUIComponent<UIPanel>();
@@ -69,6 +65,15 @@ namespace TerrainCalculator.CitiesUI
             root.autoLayoutDirection = LayoutDirection.Vertical;
             root.autoFitChildrenVertically = true;
             root.autoLayout = true;
+
+            // Anchor to top-right
+            root.anchor = UIAnchorStyle.Top | UIAnchorStyle.Right;
+            // TODO: Hack
+            root.eventSizeChanged += (UIComponent c, Vector2 s) =>
+            {
+                root.relativePosition = new Vector3(
+                    view.GetScreenResolution().x - _right - root.width, _top);
+            };
 
             Util.PrintDone(root);
             return root;

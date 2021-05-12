@@ -10,8 +10,26 @@ namespace TerrainCalculator
     public class State : MonoBehaviour
     {
         public WaterNetwork Net;
-        public Path ActivePath;
-        public Node ActiveNode;
+
+        private Path _activePath;
+        private Node _activeNode;
+        public Path ActivePath
+        {
+            get => _activePath;
+            set
+            {
+                _activePath = value;
+                ActiveNode = null;
+            }
+        }
+        public Node ActiveNode {
+            get => _activeNode;
+            set
+            {
+                _activeNode = value;
+                GetComponent<NodeDragger>().StopDrag();
+            }
+        }
         
         public enum ModeType
         {
@@ -33,8 +51,25 @@ namespace TerrainCalculator
             Net = new WaterNetwork();
             var view = UIView.GetAView();
             RootUI.Build(view, this);
-            gameObject.AddComponent<NetworkRenderer>();
-            gameObject.AddComponent<NodeDragger>();
+        }
+
+        private void Update()
+        {
+            if (_mode == ModeType.PLACE_NODE)
+            {
+                _updatePlaceNode();
+            }
+        }
+
+        private void _updatePlaceNode()
+        {
+            if (Input.GetMouseButtonDown(0) && !UIView.IsInsideUI())
+            {
+                Node node = Net.NewNode();
+                ActivePath.Nodes.Add(node);
+                ActiveNode = node;
+                GetComponent<NodeDragger>().StartDrag(node, false);
+            }
         }
 
         public delegate void ActivatePanel(PanelType panelType);
@@ -49,16 +84,25 @@ namespace TerrainCalculator
         public void OnNewRiver()
         {
             Debug.Log($"New River");
-            ActiveNode = Net.NewNode();
             ActivePath = Net.NewRiver();
-            ActivePath.Nodes.Add(ActiveNode);
-            _mode = ModeType.PLACE_NODE;
-            eventActivatePanel.Invoke(PanelType.PATH);
+            _startPath();
         }
 
         public void OnNewLake()
         {
             Debug.Log($"New Lake");
+            ActivePath = Net.NewLake();
+            _startPath();
+        }
+
+        private void _startPath()
+        {
+            Node node = Net.NewNode();
+            node.SetDefault();
+            ActivePath.Nodes.Add(node);
+            ActiveNode = node;
+            GetComponent<NodeDragger>().StartDrag(ActiveNode, true);
+            _mode = ModeType.PLACE_NODE;
             eventActivatePanel.Invoke(PanelType.PATH);
         }
 
@@ -72,12 +116,21 @@ namespace TerrainCalculator
         public void OnPathDone()
         {
             Debug.Log($"Path Done");
+            ActivePath = null;
             eventActivatePanel.Invoke(PanelType.ACTION);
         }
 
         public void OnPathDelete()
         {
             Debug.Log($"Path Delete");
+            if (ActivePath is River)
+            {
+                Net.RemoveRiver((River)ActivePath);
+            } else if (ActivePath is Lake)
+            {
+                Net.RemoveLake((Lake)ActivePath);
+            }
+            ActivePath = null;
             eventActivatePanel.Invoke(PanelType.ACTION);
         }
 
@@ -88,6 +141,7 @@ namespace TerrainCalculator
 
         public void OnNodeDone()
         {
+            ActiveNode = null;
             Debug.Log($"Node Done");
             eventActivatePanel.Invoke(PanelType.PATH);
         }
@@ -95,6 +149,8 @@ namespace TerrainCalculator
         public void OnNodeDelete()
         {
             Debug.Log($"Node Delete");
+            ActivePath.Nodes.Remove(ActiveNode);
+            ActiveNode = null;
             eventActivatePanel.Invoke(PanelType.PATH);
         }
     }

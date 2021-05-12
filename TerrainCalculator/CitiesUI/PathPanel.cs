@@ -20,7 +20,7 @@ namespace TerrainCalculator.CitiesUI
             panel.padding = new RectOffset(_padding, _padding, _padding, _padding);
             panel.autoLayoutPadding = new RectOffset(_padding, _padding, _padding, _padding);
             panel.name = "TCPathPanel";
-            Util.DebugComponent(panel);
+            //Util.DebugComponent(panel);
 
             List<UIButton> buttons = new List<UIButton>();
 

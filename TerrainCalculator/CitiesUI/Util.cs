@@ -10,9 +10,21 @@ namespace TerrainCalculator.CitiesUI
 
         public static void DebugComponent(UIComponent component)
         {
-            component.eventSizeChanged += (c, v) => PrintEvent(c, "size");
-            component.eventPositionChanged += (c, v) => PrintEvent(c, "position");
-            component.eventFitChildren += () => PrintEvent(component, "fit children");
+            component.eventSizeChanged += (c, v) =>
+            {
+                PrintEvent(c, "size");
+                _printVector(c, "size", component.size, 1);
+            };
+            component.eventPositionChanged += (c, v) =>
+            {
+                PrintEvent(c, "position");
+                _printVector(component, "relPos", component.relativePosition, 1);
+            };
+            component.eventFitChildren += () =>
+            {
+                PrintEvent(component, "fit children");
+                _printVector(component, "size", component.size, 1);
+            };
             PrintEvent(component, "setup");
         }
 

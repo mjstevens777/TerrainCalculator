@@ -18,7 +18,10 @@ namespace TerrainCalculator
             base.OnLevelLoaded(mode);
 
             GameObject go = new GameObject("TerrainCalculator");
-            State state = go.AddComponent<State>();
+            go.AddComponent<State>();
+            go.AddComponent<NodeDragger>();
+            go.AddComponent<GraphBuilder>();
+            go.AddComponent<NetworkRenderer>();
         }
 
         public override void OnLevelUnloading()

@@ -12,6 +12,8 @@ namespace TerrainCalculator.Network
         public const int NumSegments = 30;
         public bool IsDirty { get; set; }
         public List<Node> Nodes;
+        public Node First { get => Nodes[0]; }
+        public Node Last { get => Nodes[Nodes.Count - 1]; }
         private List<Vector2> _grads;
 
         public Path(WaterNetwork network)

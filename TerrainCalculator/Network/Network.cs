@@ -12,12 +12,14 @@ namespace TerrainCalculator.Network
 {
     public class WaterNetwork
     {
+        List<Node> _nodes;
         List<Lake> _lakes;
         List<River> _rivers;
         Graph _graph;
 
         public WaterNetwork()
         {
+            _nodes = new List<Node>();
             _lakes = new List<Lake>();
             _rivers = new List<River>();
         }
@@ -25,6 +27,7 @@ namespace TerrainCalculator.Network
         public Node NewNode()
         {
             Node node = new Node(this);
+            _nodes.Add(node);
             return node;
         }
 
@@ -40,6 +43,32 @@ namespace TerrainCalculator.Network
             Lake lake = new Lake(this);
             _lakes.Add(lake);
             return lake;
+        }
+
+        public void RemoveRiver(River river)
+        {
+            _rivers.Remove(river);
+        }
+
+        public void RemoveLake(Lake lake)
+        {
+            _lakes.Remove(lake);
+        }
+
+        public IEnumerable<Node> Nodes
+        {
+            get
+            {
+                return _graph.Vertices;
+            }
+        }
+
+        public IEnumerable<Edge> Edges
+        {
+            get
+            {
+                return _graph.Edges;
+            }
         }
 
         class NodeException : Exception
@@ -71,6 +100,7 @@ namespace TerrainCalculator.Network
 
             foreach (River river in _rivers)
             {
+                _graph.AddVertex(river.First); // In case there are no edges
                 foreach (Edge edge in river.GetEdges())
                 {
                     _graph.AddVerticesAndEdge(edge);
@@ -79,6 +109,7 @@ namespace TerrainCalculator.Network
 
             foreach (Lake lake in _lakes)
             {
+                _graph.AddVertex(lake.First); // In case there are no edges
                 foreach (Edge edge in lake.GetEdges())
                 {
                     _graph.AddVerticesAndEdge(edge);

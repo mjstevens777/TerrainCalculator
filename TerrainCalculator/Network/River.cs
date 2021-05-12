@@ -6,8 +6,5 @@ namespace TerrainCalculator.Network
         public River(WaterNetwork network) : base(network)
         {
         }
-
-        public Node First { get => Nodes[0]; }
-        public Node Last { get => Nodes[Nodes.Count - 1]; }
     }
 }
