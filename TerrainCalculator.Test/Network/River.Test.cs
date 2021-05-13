@@ -45,7 +45,7 @@ namespace TerrainCalculator.Test.Network
 
 			foreach (Edge edge in edges)
 			{
-				Assert.That(edge.InterpPoints.Count, Is.EqualTo(Path.NumSegments + 1));
+				Assert.That(edge.InterpPoints.Count, Is.EqualTo(Edge.NumSegments + 1));
 				Assert.That(edge.Distance, Is.EqualTo(edgeLength).Within(delta));
 			}
 
@@ -57,15 +57,15 @@ namespace TerrainCalculator.Test.Network
 			Assert.That(p.x, Is.EqualTo(99.7815f).Within(delta));
 			Assert.That(p.y, Is.EqualTo(0.3259f).Within(delta));
 
-			p = edges[0].InterpPoints[Path.NumSegments / 2];
+			p = edges[0].InterpPoints[Edge.NumSegments / 2];
 			Assert.That(p.x, Is.EqualTo(diagX).Within(delta));
 			Assert.That(p.y, Is.EqualTo(diagY).Within(delta));
 
-			p = edges[0].InterpPoints[Path.NumSegments - 1];
+			p = edges[0].InterpPoints[Edge.NumSegments - 1];
 			Assert.That(p.x, Is.EqualTo(3.44075f).Within(delta));
 			Assert.That(p.y, Is.EqualTo(99.67407f).Within(delta));
 
-			p = edges[0].InterpPoints[Path.NumSegments];
+			p = edges[0].InterpPoints[Edge.NumSegments];
 			Assert.That(p.x, Is.EqualTo(0f).Within(delta));
 			Assert.That(p.y, Is.EqualTo(100f).Within(delta));
 
@@ -73,11 +73,11 @@ namespace TerrainCalculator.Test.Network
 			Assert.That(p.x, Is.EqualTo(0f).Within(delta));
 			Assert.That(p.y, Is.EqualTo(100f).Within(delta));
 
-			p = edges[1].InterpPoints[Path.NumSegments / 2];
+			p = edges[1].InterpPoints[Edge.NumSegments / 2];
 			Assert.That(p.x, Is.EqualTo(-diagX).Within(delta));
 			Assert.That(p.y, Is.EqualTo(diagY).Within(delta));
 
-			p = edges[1].InterpPoints[Path.NumSegments];
+			p = edges[1].InterpPoints[Edge.NumSegments];
 			Assert.That(p.x, Is.EqualTo(-100f).Within(delta));
 			Assert.That(p.y, Is.EqualTo(0f).Within(delta));
 		}

@@ -10,6 +10,11 @@ using UnityEngine;
 
 namespace TerrainCalculator.Network
 {
+    public class Graph : QuikGraph.BidirectionalGraph<Node, Edge>
+    {
+        public Graph() : base() { }
+    }
+
     public class WaterNetwork
     {
         List<Node> _nodes;
@@ -125,7 +130,7 @@ namespace TerrainCalculator.Network
                 if (node.Elevation.IsFixed) fixedNodes.Add(node);
             }
 
-            Func<Edge, double> edgeCost = e => e.Flat ? 0.0 : e.Distance;
+            Func<Edge, double> edgeCost = e => e.IsFlat ? 0.0 : e.Distance;
 
             foreach (Node root in fixedNodes)
             {
@@ -138,7 +143,7 @@ namespace TerrainCalculator.Network
                     {
                         throw new NodeException("Elevation defined in too many places", edge.Target);
                     }
-                    if (edge.Flat)
+                    if (edge.IsFlat)
                     {
                         edge.Target.Elevation.SetImplicit(edge.Source.Elevation.Value);
                     } else

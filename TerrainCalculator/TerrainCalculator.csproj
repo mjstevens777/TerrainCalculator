@@ -69,9 +69,10 @@
     <Compile Include="CitiesUI\NodePanel.cs" />
     <Compile Include="UnityUI\NetworkRenderer.cs" />
     <Compile Include="Network\Segment.cs" />
-    <Compile Include="Network\Graph.cs" />
+    <Compile Include="Network\Node.cs" />
     <Compile Include="UnityUI\NodeDragger.cs" />
     <Compile Include="UnityUI\GraphBuilder.cs" />
+    <Compile Include="Network\Edge.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />

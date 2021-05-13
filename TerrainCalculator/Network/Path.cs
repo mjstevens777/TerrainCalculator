@@ -9,12 +9,13 @@ namespace TerrainCalculator.Network
     {
 
         WaterNetwork _network;
-        public const int NumSegments = 30;
         public bool IsDirty { get; set; }
         public List<Node> Nodes;
         public Node First { get => Nodes[0]; }
         public Node Last { get => Nodes[Nodes.Count - 1]; }
         private List<Vector2> _grads;
+
+        public virtual bool IsFlat { get => false; }
 
         public Path(WaterNetwork network)
         {
@@ -23,7 +24,7 @@ namespace TerrainCalculator.Network
             _grads = new List<Vector2>();
         }
 
-        public virtual List<Edge> GetEdges()
+        public List<Edge> GetEdges()
         {
             _setDirections();
             List<Edge> edges = new List<Edge>();
@@ -33,15 +34,8 @@ namespace TerrainCalculator.Network
                 int right = _wrapIndex(i + 1);
                 if (right < 0) { break; }
 
-                List<Vector2> interp = new List<Vector2>();
-                Vector2 current = Nodes[left].Pos;
-                foreach (int j in Enumerable.Range(0, NumSegments + 1))
-                {
-                    float t = i + (j / (float)NumSegments);
-                    interp.Add(_interpolate2d(t));
-                }
                 // NOTE: Bidirectionality handled in network class
-                Edge edge = new Edge(Nodes[left], Nodes[right], interp, false);
+                Edge edge = new Edge(Nodes[left], Nodes[right], this, _grads[left], _grads[right]);
                 edges.Add(edge);
             }
             return edges;
@@ -117,26 +111,6 @@ namespace TerrainCalculator.Network
             return chains;
         }
 
-        private Vector2 _interpolate2d(float t)
-        {
-            int i = Mathf.FloorToInt(t);
-            t = t - i;
-            int left = _wrapIndex(i);
-            int right = _wrapIndex(i + 1);
-
-            if (t == 0) { return Nodes[left].Pos; }
-            if (right < 0) { throw new IndexOutOfRangeException("Path interpolation out of bounds"); }
-
-            float t2 = t * t;
-            float t3 = t2 * t;
-            return (
-                (2f * t3 - 3f * t2 + 1f) * Nodes[left].Pos +
-                (t3 - 2f * t2 + t) * _grads[left] +
-                (-2f * t3 + 3f * t2) * Nodes[right].Pos +
-                (t3 - t2) * _grads[right]
-            );
-        }
-
         private void _setDirections()
         {
             _grads.Clear();
@@ -155,6 +129,7 @@ namespace TerrainCalculator.Network
             {
                 return;
             }
+            // NOTE: Denominator was hand-tuned for smoother curves
             _grads[index] = (Nodes[right].Pos - Nodes[left].Pos) / 2f;
         }
 

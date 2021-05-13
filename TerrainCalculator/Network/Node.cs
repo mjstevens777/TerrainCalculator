@@ -79,40 +79,4 @@ namespace TerrainCalculator.Network
             RiverSlope.ResetImplicit();
         }
     }
-
-    public class Edge : QuikGraph.Edge<Node>
-    {
-        public List<Vector2> InterpPoints;
-        public bool Flat;
-        private float? _distance;
-
-        public Edge(Node source, Node target, List<Vector2> interp, bool flat)
-            : base(source, target)
-        {
-            InterpPoints = interp;
-            Flat = flat;
-        }
-
-        public float Distance
-        {
-            get
-            {
-                if (_distance != null) { return (float)_distance; }
-                float sum = 0;
-                foreach (int i in Enumerable.Range(0, InterpPoints.Count - 1))
-                {
-                    Vector2 start = InterpPoints[i];
-                    Vector2 end = InterpPoints[i + 1];
-                    sum += (end - start).magnitude;
-                }
-                _distance = sum;
-                return (float)_distance;
-            }
-        }
-    }
-
-    public class Graph: QuikGraph.BidirectionalGraph<Node, Edge>
-    {
-        public Graph() : base() { }
-    }
 }

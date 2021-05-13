@@ -36,6 +36,7 @@
     <Compile Include="Network\Lake.Test.cs" />
     <Compile Include="Network\River.Test.cs" />
     <Compile Include="Network\Network.Test.cs" />
+    <Compile Include="Network\Edge.Test.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
@@ -55,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Network\" />
+    <Folder Include="UnityUI\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TerrainCalculator\TerrainCalculator.csproj">
