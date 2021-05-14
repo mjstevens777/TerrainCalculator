@@ -133,7 +133,7 @@ namespace TerrainCalculator
             }
             if (Input.GetMouseButtonDown(1) && !UIView.IsInsideUI())
             {
-                Mode = ModeType.BASE;
+                _enterBase();
             }
         }
 

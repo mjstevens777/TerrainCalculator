@@ -13,16 +13,17 @@ namespace TerrainCalculator.UnityUI
     public class NodeCollection : MonoBehaviour
     {
         private State _state;
-        private List<GameObject> _nodePrimitives;
+        private List<GameObject> _primitives;
         private Material _nodeBaseMaterial;
         private Material _nodeHighlightMaterial;
+        public Node HoveredNode;
 
         public void Start()
         {
             Debug.Log("NetworkRenderer start");
             _state = gameObject.GetComponent<State>();
 
-            _nodePrimitives = new List<GameObject>();
+            _primitives = new List<GameObject>();
 
             _nodeBaseMaterial = new Material(Shader.Find("Custom/Props/Prop/Default"));
             _nodeBaseMaterial.color = new Color(0, 0, 1, 1);
@@ -34,7 +35,7 @@ namespace TerrainCalculator.UnityUI
         public void Update()
         {
             _syncNodes();
-            _checkCollision();
+            _checkCollisions();
         }
 
         public void LateUpdate()
@@ -46,7 +47,7 @@ namespace TerrainCalculator.UnityUI
         {
             List<Node> nodes = new List<Node>(_state.Net.Nodes);
 
-            for (int i = _nodePrimitives.Count; i < nodes.Count; i++)
+            for (int i = _primitives.Count; i < nodes.Count; i++)
             {
                 Debug.Log($"Creating primitive {i}");
                 GameObject primitive = GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -54,27 +55,55 @@ namespace TerrainCalculator.UnityUI
                 primitive.AddComponent<NodeContainer>();
                 Debug.Log("Adding mesh collider");
                 primitive.AddComponent<MeshCollider>();
-                _nodePrimitives.Add(primitive);
+                _primitives.Add(primitive);
             }
 
-            for (int i = _nodePrimitives.Count - 1; i >= nodes.Count; i--)
+            for (int i = _primitives.Count - 1; i >= nodes.Count; i--)
             {
                 Debug.Log($"Destroying primitive {i}");
-                GameObject.Destroy(_nodePrimitives[i]);
-                _nodePrimitives.RemoveAt(i);
+                GameObject.Destroy(_primitives[i]);
+                _primitives.RemoveAt(i);
             }
 
             for (int i = 0; i < nodes.Count; i++)
             {
-                _nodePrimitives[i].GetComponent<NodeContainer>().Node = nodes[i];
+                _primitives[i].GetComponent<NodeContainer>().Node = nodes[i];
             }
+        }
+
+        private void _checkCollisions()
+        {
+            _updatePositions();
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            float maxDist = Camera.main.farClipPlane;
+            RaycastHit hit;
+            
+            foreach (GameObject primitive in _primitives)
+            {
+                MeshCollider collider = primitive.GetComponent<MeshCollider>();
+                if (collider.Raycast(ray, out hit, maxDist))
+                {
+                    Node node = primitive.GetComponent<NodeContainer>().Node;
+                    if (node == _state.ActiveNode) continue;
+                    if (node != HoveredNode)
+                    {
+                        Debug.Log($"Hovering on node");
+                    }
+                    HoveredNode = node;
+                    return;
+                }
+            }
+            if (HoveredNode != null) { 
+                Debug.Log($"Unhovering node");
+            }
+            HoveredNode = null;
         }
 
         private void _updatePositions()
         {
-            for (int i = 0; i < _nodePrimitives.Count; i++)
+            foreach (GameObject primitive in _primitives)
             {
-                _updatePosition(_nodePrimitives[i]);
+                _updatePosition(primitive);
             }
         }
 
