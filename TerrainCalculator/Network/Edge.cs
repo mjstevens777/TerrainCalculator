@@ -34,7 +34,7 @@ namespace TerrainCalculator.Network
 
         public Vector3[] BuildVertices()
         {
-            var vertices = new Vector3[3 * (NumSegments + 1)];
+            var vertices = new Vector3[4 * (NumSegments + 1)];
             for (int i = 0; i <= NumSegments; i++)
             {
                 Vector3 position = _getPos(i);
@@ -44,11 +44,13 @@ namespace TerrainCalculator.Network
                 List<Vector3> deltas = new List<Vector3>();
                 deltas.Add(left);
                 deltas.Add(up);
+                // Repeat twice to get hard edge in the shader
+                deltas.Add(up);
                 deltas.Add(-left);
 
-                for (int j = 0; j < 3; j++)
+                for (int j = 0; j < 4; j++)
                 {
-                    vertices[i * 3 + j] = position + deltas[j];
+                    vertices[i * 4 + j] = position + deltas[j];
                 }
             }
             return vertices;
@@ -56,30 +58,30 @@ namespace TerrainCalculator.Network
 
         public int[] BuildTriangles()
         {
-            // 3-4-5
-            // |/|/|
-            // 0-1-2
+            // 4-56-7
+            // |/||/|
+            // 0-12-3
             int[] triangles = new int[NumSegments * 4 * 3];
             for (int row = 0; row < NumSegments; row++)
             {
-                int j = row * 3;
+                int j = row * 4;
                 int k = row * 4 * 3;
                 // Tri
                 triangles[k + 0] = j + 0;
-                triangles[k + 1] = j + 3;
-                triangles[k + 2] = j + 4;
+                triangles[k + 1] = j + 4;
+                triangles[k + 2] = j + 5;
                 // Tri
                 triangles[k + 3] = j + 0;
-                triangles[k + 4] = j + 4;
+                triangles[k + 4] = j + 5;
                 triangles[k + 5] = j + 1;
                 // Tri
-                triangles[k + 6] = j + 1;
-                triangles[k + 7] = j + 4;
-                triangles[k + 8] = j + 5;
+                triangles[k + 6] = j + 2;
+                triangles[k + 7] = j + 6;
+                triangles[k + 8] = j + 7;
                 // Tri
-                triangles[k + 9] = j + 1;
-                triangles[k + 10] = j + 5;
-                triangles[k + 11] = j + 2;
+                triangles[k + 9] = j + 2;
+                triangles[k + 10] = j + 7;
+                triangles[k + 11] = j + 3;
             }
             return triangles;
         }

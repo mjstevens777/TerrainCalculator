@@ -21,7 +21,8 @@ namespace TerrainCalculator
             go.AddComponent<State>();
             go.AddComponent<NodeDragger>();
             go.AddComponent<GraphBuilder>();
-            go.AddComponent<NetworkRenderer>();
+            go.AddComponent<NodeCollection>();
+            go.AddComponent<EdgeCollection>();
         }
 
         public override void OnLevelUnloading()

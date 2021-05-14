@@ -43,13 +43,13 @@ namespace TerrainCalculator.Test.Network
 
 			Vector3[] vertices = edge.BuildVertices();
 
-			Assert.That(vertices.Length, Is.EqualTo(93));
+			Assert.That(vertices.Length, Is.EqualTo(124));
 
-			int[] vertIndices = { 0, 1, 2,  45, 46, 47, 90, 91, 92};
-			float[] vertX = { -15, 0, 15, 50, 50, 50, 125, 100, 75 };
-			float[] vertY = { 40, 50, 40, 45, 60, 45, 50, 70, 50 };
+			int[] vertIndices = { 0, 1, 2, 3,  60, 61, 62, 63, 120, 121, 122, 123};
+			float[] vertX = { -15, 0, 0, 15, 50, 50, 50, 50, 125, 100, 100, 75 };
+			float[] vertY = { 40, 50, 50, 40, 45, 60, 60, 45, 50, 70, 70, 50 };
 			float midZ = 50f;
-			float[] vertZ = { 0, 0, 0, midZ + 20, midZ, midZ - 20, 0, 0, 0 };
+			float[] vertZ = { 0, 0, 0, 0, midZ + 20, midZ, midZ, midZ - 20, 0, 0, 0, 0 };
 
 			float delta = 0.001f;
 			for (int i = 0; i < vertIndices.Length; i++)
@@ -65,13 +65,9 @@ namespace TerrainCalculator.Test.Network
 
 			int[] triangles = edge.BuildTriangles();
 
-			int[,] edgeCounts = new int[vertices.Length, vertices.Length];
-			for (int i = 0; i < triangles.Length; i+=3)
-            {
-				edgeCounts[triangles[i + 0], triangles[i + 1]]++;
-				edgeCounts[triangles[i + 1], triangles[i + 2]]++;
-				edgeCounts[triangles[i + 2], triangles[i + 0]]++;
-
+			// Check normals
+			for (int i = 0; i < triangles.Length; i += 3)
+			{
 				Vector3 p1 = vertices[triangles[i + 0]];
 				Vector3 p2 = vertices[triangles[i + 1]];
 				Vector3 p3 = vertices[triangles[i + 2]];
@@ -80,18 +76,83 @@ namespace TerrainCalculator.Test.Network
 				Assert.Greater(normal.y, 0, $"triangle at {i} points up");
 			}
 
+			// Construct adjacency matrix
+			int[,] edgeCounts = new int[vertices.Length, vertices.Length];
+			for (int i = 0; i < triangles.Length; i+=3)
+            {
+				edgeCounts[triangles[i + 0], triangles[i + 1]]++;
+				edgeCounts[triangles[i + 1], triangles[i + 2]]++;
+				edgeCounts[triangles[i + 2], triangles[i + 0]]++;
+			}
 
-			Assert.AreEqual(0, edgeCounts[0, 1], "Edge 0 1");
-			Assert.AreEqual(1, edgeCounts[1, 0], "Edge 1 0");
-			Assert.AreEqual(0, edgeCounts[1, 2], "Edge 1 2");
-			Assert.AreEqual(1, edgeCounts[2, 1], "Edge 2 1");
-			Assert.AreEqual(1, edgeCounts[1, 4], "Edge 1 4");
-			Assert.AreEqual(1, edgeCounts[4, 1], "Edge 4 1");
-			Assert.AreEqual(1, edgeCounts[4, 5], "Edge 4 5");
-			Assert.AreEqual(1, edgeCounts[5, 4], "Edge 5 4");
+			// Make sure there are no duplicates
+			for (int i = 0; i < vertices.Length; i++)
+			{
+				for (int j = 0; i < vertices.Length; i++)
+				{
+					Assert.That(edgeCounts[i, j], Is.InRange(0, 1), $"Edge in range {i} {j}");
+				}
+			}
 
-			Assert.AreEqual(0, edgeCounts[92, 91], "Edge 92 91");
-			Assert.AreEqual(1, edgeCounts[91, 92], "Edge 91 92");
+			// Check edge values
+			Action<int, int, int, int> assertEdge = (int p, int q, int fw, int bw) =>
+			{
+				Assert.AreEqual(fw, edgeCounts[p, q], $"Edge {p} {q}");
+				Assert.AreEqual(bw, edgeCounts[q, p], $"Edge {q} {p}");
+			};
+			// Note: Expect CW because we are in XZ
+			Action<int, int> assertCWEdge = (int p, int q) => assertEdge(p, q, 1, 0);
+			Action<int, int> assertCCWEdge = (int p, int q) => assertEdge(p, q, 0, 1);
+			Action<int, int> assertBothEdge = (int p, int q) => assertEdge(p, q, 1, 1);
+			Action<int, int> assertEmptyEdge = (int p, int q) => assertEdge(p, q, 0, 0);
+			Action<int, int, int, int> assertDiagonal = (int p, int q, int r, int s) =>
+			{
+				// p q
+				// r s
+				if (edgeCounts[r, q] == 1)
+				{
+					assertEdge(r, q, 1, 1);
+					assertEdge(p, s, 0, 0);
+
+				}
+				else
+				{
+					assertEdge(p, s, 1, 1);
+					assertEdge(r, q, 0, 0);
+				}
+			};
+
+
+            // 120-121 122-123
+            //  | / |   | / |
+            // 116-117 118-119
+            // 
+            // 4-56-7
+            // |/||/|
+            // 0-12-3
+            assertCCWEdge(0, 1);
+			assertBothEdge(4, 5);
+			assertCCWEdge(4, 0);
+            assertCCWEdge(1, 5);
+			assertDiagonal(0, 1, 4, 5);
+
+			assertCCWEdge(2, 3);
+			assertCCWEdge(3, 7);
+			assertBothEdge(7, 6);
+            assertCCWEdge(6, 2);
+            assertDiagonal(2, 3, 6, 7);
+
+			assertBothEdge(116, 117);
+			assertCCWEdge(117, 121);
+			assertCCWEdge(121, 120);
+			assertCCWEdge(120, 116);
+			assertDiagonal(116, 117, 120, 121);
+
+			assertBothEdge(118, 119);
+			assertCCWEdge(119, 123);
+			assertCCWEdge(123, 122);
+			assertCCWEdge(122, 118);
+			assertDiagonal(118, 119, 122, 123);
 		}
 
 		private int _toEdge(int a, int b, int count) => a * count + b;

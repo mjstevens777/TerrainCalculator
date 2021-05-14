@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ColossalFramework;
 using ColossalFramework.Math;
+using ColossalFramework.UI;
 using TerrainCalculator.Network;
 using UnityEngine;
 
@@ -36,9 +37,18 @@ namespace TerrainCalculator.UnityUI
 
         public void Update()
         {
-            Debug.Log("Dragger update");
             if (_node == null) return;
-            Debug.Log("Node exists");
+            if (UIView.IsInsideUI()) return;
+            if (_setElevation)
+            {
+                _updateFromTerrain();
+            } else
+            {
+                _updateFromPlane();
+            }
+        }
+
+        private void _updateFromTerrain() {
             Ray mouseRay = _camera.ScreenPointToRay(Input.mousePosition);
             Vector3 origin = mouseRay.origin;
             Vector3 vector = origin + (mouseRay.direction.normalized * _camera.farClipPlane);
@@ -48,10 +58,20 @@ namespace TerrainCalculator.UnityUI
                 Debug.Log("Setting position from drag");
                 _node.Pos.x = MousePos.x;
                 _node.Pos.y = MousePos.z;
-                if (_setElevation)
-                {
-                    _node.Elevation.SetFixed(MousePos.y);
-                }
+                _node.Elevation.SetFixed(MousePos.y);
+            }
+        }
+
+        private void _updateFromPlane()
+        {
+            Plane plane = new Plane(Vector3.up, Vector3.up * _node.Elevation.Value);
+            Ray mouseRay = _camera.ScreenPointToRay(Input.mousePosition);
+            float enter;
+            if (plane.Raycast(mouseRay, out enter))
+            {
+                Vector3 pos = mouseRay.GetPoint(enter);
+                _node.Pos.x = pos.x;
+                _node.Pos.y = pos.z;
             }
         }
     }

@@ -42,7 +42,14 @@ namespace TerrainCalculator
         }
 
         private ModeType _mode;
-        public ModeType Mode {get => _mode; }
+        public ModeType Mode {
+            get => _mode;
+            set
+            {
+                _exitMode();
+                _mode = value;
+            }
+        }
 
 
         public void Start()
@@ -55,9 +62,56 @@ namespace TerrainCalculator
 
         private void Update()
         {
-            if (_mode == ModeType.PLACE_NODE)
-            {
+            if (Mode == ModeType.BASE) {
+                _updateBase();
+            } else if (Mode == ModeType.PLACE_NODE) {
                 _updatePlaceNode();
+            }
+        }
+
+        private void _exitMode()
+        {
+            if (Mode == ModeType.BASE) {
+                _exitBase();
+            } else if (Mode == ModeType.PLACE_NODE) {
+                _exitPlaceNode();
+            }
+        }
+
+        private void _enterBase()
+        {
+            Mode = ModeType.BASE;
+            eventActivatePanel.Invoke(PanelType.ACTION);
+        }
+
+        private void _updateBase()
+        {
+
+        }
+
+        private void _exitBase()
+        {
+
+        }
+
+        private void _enterPlaceNode(Path path)
+        {
+            Debug.Log("Enter place node");
+            Mode = ModeType.PLACE_NODE;
+            eventActivatePanel.Invoke(PanelType.PATH);
+            ActivePath = path;
+            Node node = Net.NewNode();
+            ActivePath.Nodes.Add(node);
+            ActiveNode = node;
+            Debug.Log($"Node count = {ActivePath.Nodes.Count}");
+            if (ActivePath.Nodes.Count == 1) {
+                Debug.Log($"Place first node");
+                node.SetDefault();
+                GetComponent<NodeDragger>().StartDrag(node, true);
+            } else
+            {
+                Debug.Log($"Place subsequent node");
+                GetComponent<NodeDragger>().StartDrag(node, false);
             }
         }
 
@@ -65,11 +119,29 @@ namespace TerrainCalculator
         {
             if (Input.GetMouseButtonDown(0) && !UIView.IsInsideUI())
             {
+                Debug.Log("Place node");
                 Node node = Net.NewNode();
+                // Set to existing location
+                node.Pos.x = ActiveNode.Pos.x;
+                node.Pos.y = ActiveNode.Pos.y;
+                node.Elevation.Value = ActiveNode.Elevation.Value;
+                // Set as new active node
                 ActivePath.Nodes.Add(node);
                 ActiveNode = node;
                 GetComponent<NodeDragger>().StartDrag(node, false);
             }
+            if (Input.GetMouseButtonDown(1) && !UIView.IsInsideUI())
+            {
+                Mode = ModeType.BASE;
+            }
+        }
+
+        private void _exitPlaceNode()
+        {
+            Debug.Log("Exit place node");
+            ActivePath.Nodes.Remove(ActiveNode);
+            ActivePath = null;
+            GetComponent<NodeDragger>().StopDrag();
         }
 
         public delegate void ActivatePanel(PanelType panelType);
@@ -84,26 +156,13 @@ namespace TerrainCalculator
         public void OnNewRiver()
         {
             Debug.Log($"New River");
-            ActivePath = Net.NewRiver();
-            _startPath();
+            _enterPlaceNode(Net.NewRiver());
         }
 
         public void OnNewLake()
         {
             Debug.Log($"New Lake");
-            ActivePath = Net.NewLake();
-            _startPath();
-        }
-
-        private void _startPath()
-        {
-            Node node = Net.NewNode();
-            node.SetDefault();
-            ActivePath.Nodes.Add(node);
-            ActiveNode = node;
-            GetComponent<NodeDragger>().StartDrag(ActiveNode, true);
-            _mode = ModeType.PLACE_NODE;
-            eventActivatePanel.Invoke(PanelType.PATH);
+            _enterPlaceNode(Net.NewLake());
         }
 
         // TODO: Remove
