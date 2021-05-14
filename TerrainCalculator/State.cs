@@ -81,6 +81,7 @@ namespace TerrainCalculator
         private void _enterBase()
         {
             Mode = ModeType.BASE;
+            ActivePath = null;
             eventActivatePanel.Invoke(PanelType.ACTION);
         }
 
@@ -175,22 +176,23 @@ namespace TerrainCalculator
         public void OnPathDone()
         {
             Debug.Log($"Path Done");
-            ActivePath = null;
-            eventActivatePanel.Invoke(PanelType.ACTION);
+            _enterBase();
         }
 
         public void OnPathDelete()
         {
             Debug.Log($"Path Delete");
-            if (ActivePath is River)
+            Path path = ActivePath;
+            _enterBase();
+            if (path is River)
             {
+                Debug.Log($"Delete River");
                 Net.RemoveRiver((River)ActivePath);
-            } else if (ActivePath is Lake)
+            } else if (path is Lake)
             {
+                Debug.Log($"Delete Lake");
                 Net.RemoveLake((Lake)ActivePath);
             }
-            ActivePath = null;
-            eventActivatePanel.Invoke(PanelType.ACTION);
         }
 
         public void OnNodeValueSet(Network.Node.Key key, double value)
