@@ -33,10 +33,6 @@ namespace TerrainCalculator.CitiesUI
                 panel, "TCRiverButton", _newRiver, state.OnNewRiver);
             buttons.Add(riverButton);
 
-            var nodeButton = DefaultButton.Build(
-                panel, "TCNodeButton", "WIP: Node Menu", state.OnNewNode);
-            buttons.Add(nodeButton);
-
             foreach (var button in buttons)
             {
                 int horizontalPadding = panel.padding.horizontal + panel.autoLayoutPadding.horizontal;

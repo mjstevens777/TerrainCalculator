@@ -12,17 +12,19 @@ namespace TerrainCalculator.UnityUI
 
     public class NodeCollection : MonoBehaviour
     {
-        private State _state;
-        private List<GameObject> _primitives;
-        private Material _nodeBaseMaterial;
-        private Material _nodeHighlightMaterial;
         public Node HideNode;
         public Node HighlightNode;
 
+        private WaterNetwork _net;
+        private List<GameObject> _primitives;
+        private Material _nodeBaseMaterial;
+        private Material _nodeHighlightMaterial;
+
         public void Start()
         {
-            Debug.Log("NetworkRenderer start");
-            _state = gameObject.GetComponent<State>();
+            Debug.Log("NodeCollection start");
+
+            _net = GetComponent<State>().Net;
 
             _primitives = new List<GameObject>();
 
@@ -35,19 +37,13 @@ namespace TerrainCalculator.UnityUI
 
         public void Update()
         {
-            _syncNodes();
             HighlightNode = null;
             HideNode = null;
         }
 
-        public void LateUpdate()
+        public void _syncNodes()
         {
-            _drawNodes();
-        }
-
-        private void _syncNodes()
-        {
-            List<Node> nodes = new List<Node>(_state.Net.Nodes);
+            List<Node> nodes = new List<Node>(_net.Nodes);
 
             for (int i = _primitives.Count; i < nodes.Count; i++)
             {
@@ -73,13 +69,18 @@ namespace TerrainCalculator.UnityUI
             }
         }
 
+        public void LateUpdate()
+        {
+            _syncNodes();
+            _drawNodes();
+        }
+
         public Node CheckCollisions(Node exclude = null, Node include = null)
         {
-            _drawNodes();
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             float maxDist = Camera.main.farClipPlane;
             RaycastHit hit;
-            
+
             foreach (GameObject primitive in _primitives)
             {
                 Node node = primitive.GetComponent<NodeContainer>().Node;
@@ -93,6 +94,23 @@ namespace TerrainCalculator.UnityUI
                 }
             }
             return null;
+        }
+
+        public bool CheckCollision(Node node)
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            float maxDist = Camera.main.farClipPlane;
+            RaycastHit hit;
+
+            foreach (GameObject primitive in _primitives)
+            {
+                Node primitiveNode = primitive.GetComponent<NodeContainer>().Node;
+                if (node != primitiveNode) continue;
+                _updatePosition(primitive);
+                MeshCollider collider = primitive.GetComponent<MeshCollider>();
+                return collider.Raycast(ray, out hit, maxDist);
+            }
+            return false;
         }
 
         private void _drawNodes()

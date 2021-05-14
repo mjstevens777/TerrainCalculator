@@ -19,10 +19,13 @@ namespace TerrainCalculator
 
             GameObject go = new GameObject("TerrainCalculator");
             go.AddComponent<State>();
+            go.AddComponent<NodeDragger>();
+            go.AddComponent<PlaceNodeMode>();
+            go.AddComponent<BaseMode>();
+            go.AddComponent<EditNodeMode>();
+            go.AddComponent<GraphBuilder>();
             go.AddComponent<NodeCollection>();
             go.AddComponent<EdgeCollection>();
-            go.AddComponent<NodeDragger>();
-            go.AddComponent<GraphBuilder>();
         }
 
         public override void OnLevelUnloading()

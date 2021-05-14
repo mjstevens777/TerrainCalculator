@@ -10,40 +10,36 @@ namespace TerrainCalculator.UnityUI
 {
     public class NodeDragger : MonoBehaviour
     {
-        public bool IsDragging;
-
         private Node _node;
         private bool _setElevation;
-        private Camera _camera;
-        public Vector3 MousePos;
         public Node SnapNode;
 
         public void Start()
         {
-            Debug.Log("Dragger start");
-            _camera = Camera.main;
+            enabled = false;
         }
 
-        public void StartDrag(Node node, bool setElevation)
+        public void EnterMode(Node node, bool setElevation)
         {
+            enabled = true;
             _node = node;
             _setElevation = setElevation;
-            SnapNode = null;
         }
 
-        public void StopDrag()
+        public void ExitMode()
         {
+            enabled = false;
             _node = null;
             _setElevation = false;
         }
 
         public void Update()
         {
-            if (_node == null) return;
             if (UIView.IsInsideUI()) return;
 
             GetComponent<NodeCollection>().HighlightNode = _node;
 
+            SnapNode = null;
             if (_setElevation)
             {
                 _updateFromTerrain();
@@ -58,16 +54,17 @@ namespace TerrainCalculator.UnityUI
             // TODO: Add a separate flag from _setElevation that controls snapping?
             if (_snapToHovered()) return;
 
-            Ray mouseRay = _camera.ScreenPointToRay(Input.mousePosition);
+            Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
             Vector3 origin = mouseRay.origin;
-            Vector3 vector = origin + (mouseRay.direction.normalized * _camera.farClipPlane);
+            Vector3 vector = origin + (mouseRay.direction.normalized * Camera.main.farClipPlane);
             Segment3 ray = new Segment3(origin, vector);
-            if (Singleton<TerrainManager>.instance.RayCast(ray, out MousePos))
+            Vector3 _mousePos;
+            if (Singleton<TerrainManager>.instance.RayCast(ray, out _mousePos))
             {
                 Debug.Log("Setting position from drag");
-                _node.Pos.x = MousePos.x;
-                _node.Pos.y = MousePos.z;
-                _node.Elevation.SetFixed(MousePos.y);
+                _node.Pos.x = _mousePos.x;
+                _node.Pos.y = _mousePos.z;
+                _node.Elevation.SetFixed(_mousePos.y);
             }
         }
 
@@ -82,14 +79,15 @@ namespace TerrainCalculator.UnityUI
             if (_setElevation) {
                 _node.Elevation.SetFixed(SnapNode.Elevation.Value);
             }
-            collection.HideNode = SnapNode;
+            collection.HideNode = _node;
+            collection.HighlightNode = SnapNode;
             return true;
         }
 
         private void _updateFromPlane()
         {
             Plane plane = new Plane(Vector3.up, Vector3.up * _node.Elevation.Value);
-            Ray mouseRay = _camera.ScreenPointToRay(Input.mousePosition);
+            Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
             float enter;
             if (plane.Raycast(mouseRay, out enter))
             {

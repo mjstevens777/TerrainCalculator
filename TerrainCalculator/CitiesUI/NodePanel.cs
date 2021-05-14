@@ -60,10 +60,10 @@ namespace TerrainCalculator.CitiesUI
             thumb.spriteName = "OptionsScrollbarThumb";
             slider.thumbObject = thumb;
 
-            //slider.eventValueChanged += (UIComponent c, float value) =>
-            //{
-            //    state.OnNodeValueSet(key, value);
-            //};
+            slider.eventValueChanged += (UIComponent c, float value) =>
+            {
+                state.OnNodeValueSet(key, value);
+            };
 
             //state.eventImplicitValuesChanged += (Network.Node node) =>
             //{

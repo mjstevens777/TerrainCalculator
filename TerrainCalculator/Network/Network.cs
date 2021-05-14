@@ -60,6 +60,35 @@ namespace TerrainCalculator.Network
             _lakes.Remove(lake);
         }
 
+        public void RemoveNode(Node node)
+        {
+            List<River> riversToRemove = new List<River>();
+            foreach (var river in _rivers) {
+                river.Nodes.Remove(node);
+                if (river.Nodes.Count < 2)
+                {
+                    riversToRemove.Add(river);
+                }
+            }
+            foreach(var river in riversToRemove)
+            {
+                RemoveRiver(river);
+            }
+            List<Lake> lakesToRemove = new List<Lake>();
+            foreach (var lake in _lakes)
+            {
+                lake.Nodes.Remove(node);
+                if (lake.Nodes.Count < 2)
+                {
+                    lakesToRemove.Add(lake);
+                }
+            }
+            foreach (var lake in lakesToRemove)
+            {
+                RemoveLake(lake);
+            }
+        }
+
         public IEnumerable<Node> Nodes
         {
             get

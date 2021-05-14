@@ -1,21 +1,22 @@
 ﻿using System;
+using TerrainCalculator.Network;
 using UnityEngine;
 
 namespace TerrainCalculator.UnityUI
 {
     public class GraphBuilder : MonoBehaviour
     {
-        State _state;
+        private WaterNetwork _net;
 
         public void Start()
         {
             Debug.Log("Dragger start");
-            _state = gameObject.GetComponent<State>();
+            _net = GetComponent<State>().Net;
         }
 
         public void Update()
         {
-            _state.Net.InterpolateAll();
+            _net.InterpolateAll();
         }
     }
 }

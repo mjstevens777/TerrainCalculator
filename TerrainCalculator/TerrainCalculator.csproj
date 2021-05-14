@@ -73,8 +73,10 @@
     <Compile Include="UnityUI\NodeDragger.cs" />
     <Compile Include="UnityUI\GraphBuilder.cs" />
     <Compile Include="Network\Edge.cs" />
-    <Compile Include="UnityUI\NodeSelector.cs" />
+    <Compile Include="UnityUI\BaseMode.cs" />
     <Compile Include="UnityUI\EdgeCollection.cs" />
+    <Compile Include="UnityUI\PlaceNodeMode.cs" />
+    <Compile Include="UnityUI\EditNodeMode.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
