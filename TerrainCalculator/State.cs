@@ -108,11 +108,11 @@ namespace TerrainCalculator
             if (ActivePath.Nodes.Count == 1) {
                 Debug.Log($"Place first node");
                 node.SetDefault();
-                GetComponent<NodeDragger>().StartDrag(node, true);
+                GetComponent<NodeDragger>().StartDrag(node, setElevation: true);
             } else
             {
                 Debug.Log($"Place subsequent node");
-                GetComponent<NodeDragger>().StartDrag(node, false);
+                GetComponent<NodeDragger>().StartDrag(node, setElevation: false);
             }
         }
 
@@ -121,6 +121,14 @@ namespace TerrainCalculator
             if (Input.GetMouseButtonDown(0) && !UIView.IsInsideUI())
             {
                 Debug.Log("Place node");
+                Node snapNode = GetComponent<NodeDragger>().SnapNode;
+                if (snapNode != null)
+                {
+                    Debug.Log("Snap node to existing");
+                    ActivePath.Nodes.Remove(ActiveNode);
+                    ActivePath.Nodes.Add(snapNode);
+                }
+
                 Node node = Net.NewNode();
                 // Set to existing location
                 node.Pos.x = ActiveNode.Pos.x;
@@ -129,7 +137,7 @@ namespace TerrainCalculator
                 // Set as new active node
                 ActivePath.Nodes.Add(node);
                 ActiveNode = node;
-                GetComponent<NodeDragger>().StartDrag(node, false);
+                GetComponent<NodeDragger>().StartDrag(node, setElevation: false);
             }
             if (Input.GetMouseButtonDown(1) && !UIView.IsInsideUI())
             {

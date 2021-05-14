@@ -16,6 +16,7 @@ namespace TerrainCalculator.UnityUI
         private bool _setElevation;
         private Camera _camera;
         public Vector3 MousePos;
+        public Node SnapNode;
 
         public void Start()
         {
@@ -27,6 +28,7 @@ namespace TerrainCalculator.UnityUI
         {
             _node = node;
             _setElevation = setElevation;
+            SnapNode = null;
         }
 
         public void StopDrag()
@@ -39,6 +41,9 @@ namespace TerrainCalculator.UnityUI
         {
             if (_node == null) return;
             if (UIView.IsInsideUI()) return;
+
+            GetComponent<NodeCollection>().HighlightNode = _node;
+
             if (_setElevation)
             {
                 _updateFromTerrain();
@@ -46,13 +51,17 @@ namespace TerrainCalculator.UnityUI
             {
                 _updateFromPlane();
             }
+
         }
 
         private void _updateFromTerrain() {
+            // TODO: Add a separate flag from _setElevation that controls snapping?
+            if (_snapToHovered()) return;
+
             Ray mouseRay = _camera.ScreenPointToRay(Input.mousePosition);
             Vector3 origin = mouseRay.origin;
             Vector3 vector = origin + (mouseRay.direction.normalized * _camera.farClipPlane);
-            Segment3 ray = new Segment3(origin, vector); //using colossal math just for this
+            Segment3 ray = new Segment3(origin, vector);
             if (Singleton<TerrainManager>.instance.RayCast(ray, out MousePos))
             {
                 Debug.Log("Setting position from drag");
@@ -60,6 +69,21 @@ namespace TerrainCalculator.UnityUI
                 _node.Pos.y = MousePos.z;
                 _node.Elevation.SetFixed(MousePos.y);
             }
+        }
+
+        private bool _snapToHovered()
+        {
+            NodeCollection collection = GetComponent<NodeCollection>();
+            SnapNode = collection.CheckCollisions(exclude: _node);
+
+            if (SnapNode == null) return false;
+            _node.Pos.x = SnapNode.Pos.x;
+            _node.Pos.y = SnapNode.Pos.y;
+            if (_setElevation) {
+                _node.Elevation.SetFixed(SnapNode.Elevation.Value);
+            }
+            collection.HideNode = SnapNode;
+            return true;
         }
 
         private void _updateFromPlane()

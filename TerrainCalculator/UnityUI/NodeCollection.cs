@@ -16,7 +16,8 @@ namespace TerrainCalculator.UnityUI
         private List<GameObject> _primitives;
         private Material _nodeBaseMaterial;
         private Material _nodeHighlightMaterial;
-        public Node HoveredNode;
+        public Node HideNode;
+        public Node HighlightNode;
 
         public void Start()
         {
@@ -35,12 +36,13 @@ namespace TerrainCalculator.UnityUI
         public void Update()
         {
             _syncNodes();
-            _checkCollisions();
+            HighlightNode = null;
+            HideNode = null;
         }
 
         public void LateUpdate()
         {
-            _updatePositions();
+            _drawNodes();
         }
 
         private void _syncNodes()
@@ -71,39 +73,34 @@ namespace TerrainCalculator.UnityUI
             }
         }
 
-        private void _checkCollisions()
+        public Node CheckCollisions(Node exclude = null, Node include = null)
         {
-            _updatePositions();
+            _drawNodes();
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             float maxDist = Camera.main.farClipPlane;
             RaycastHit hit;
             
             foreach (GameObject primitive in _primitives)
             {
+                Node node = primitive.GetComponent<NodeContainer>().Node;
+                if (node == exclude) continue;
+                if (include != null && node != include) continue;
+                _updatePosition(primitive);
                 MeshCollider collider = primitive.GetComponent<MeshCollider>();
                 if (collider.Raycast(ray, out hit, maxDist))
                 {
-                    Node node = primitive.GetComponent<NodeContainer>().Node;
-                    if (node == _state.ActiveNode) continue;
-                    if (node != HoveredNode)
-                    {
-                        Debug.Log($"Hovering on node");
-                    }
-                    HoveredNode = node;
-                    return;
+                    return node;
                 }
             }
-            if (HoveredNode != null) { 
-                Debug.Log($"Unhovering node");
-            }
-            HoveredNode = null;
+            return null;
         }
 
-        private void _updatePositions()
+        private void _drawNodes()
         {
             foreach (GameObject primitive in _primitives)
             {
                 _updatePosition(primitive);
+                _updateMaterial(primitive);
             }
         }
 
@@ -111,14 +108,6 @@ namespace TerrainCalculator.UnityUI
         private void _updatePosition(GameObject primitive)
         {
             Node node = primitive.GetComponent<NodeContainer>().Node;
-
-            Material material = _nodeBaseMaterial;
-            if (node == _state.ActiveNode)
-            {
-                material = _nodeHighlightMaterial;
-            }
-            primitive.GetComponent<Renderer>().material = material;
-
             primitive.transform.position = new Vector3(
                 node.Pos.x,
                 node.Elevation.Value,
@@ -127,6 +116,14 @@ namespace TerrainCalculator.UnityUI
             float width = node.RiverWidth.Value + node.ShoreWidth.Value;
             float depth = node.ShoreDepth.Value;
             primitive.transform.localScale = new Vector3(width, depth * 2, width);
+        }
+
+        private void _updateMaterial(GameObject primitive)
+        {
+            Node node = primitive.GetComponent<NodeContainer>().Node;
+            primitive.SetActive(node != HideNode);
+            var material = node == HighlightNode ? _nodeHighlightMaterial : _nodeBaseMaterial;
+            primitive.GetComponent<Renderer>().material = material;
         }
     }
 }
