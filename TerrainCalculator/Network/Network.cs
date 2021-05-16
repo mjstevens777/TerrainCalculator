@@ -93,6 +93,7 @@ namespace TerrainCalculator.Network
         {
             get
             {
+                if (_graph == null) return Enumerable.Empty<Node>();
                 return _graph.Vertices;
             }
         }
@@ -101,6 +102,7 @@ namespace TerrainCalculator.Network
         {
             get
             {
+                if (_graph == null) return Enumerable.Empty<Edge>();
                 return _graph.Edges;
             }
         }

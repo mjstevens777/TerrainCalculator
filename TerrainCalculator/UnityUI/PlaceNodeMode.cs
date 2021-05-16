@@ -19,6 +19,7 @@ namespace TerrainCalculator.UnityUI
 
         public void EnterMode(Path path)
         {
+            GetComponent<GraphBuilder>().IsDirty = true;
             Debug.Log($"Entering node placement mode");
             enabled = true;
             _path = path;
@@ -53,22 +54,6 @@ namespace TerrainCalculator.UnityUI
             GetComponent<State>().EnterBase();
         }
 
-        private void _deletePath()
-        {
-            _path.Nodes.Clear();
-            if (_path is River)
-            {
-                Debug.Log($"Delete River");
-                _net.RemoveRiver((River)_path);
-            }
-            else if (_path is Lake)
-            {
-                Debug.Log($"Delete Lake");
-                _net.RemoveLake((Lake)_path);
-            }
-
-        }
-
         public void Update()
         {
             if (UIView.IsInsideUI()) return;
@@ -95,9 +80,7 @@ namespace TerrainCalculator.UnityUI
                 else
                 {
                     // Go back
-                    _path.Nodes.Remove(_node);
-                    _node = _path.Last;
-                    GetComponent<NodeDragger>().EnterMode(_node, setElevation: _node.Elevation.IsFixed);
+                    _goBack();
                 }
             }
         }
@@ -109,15 +92,34 @@ namespace TerrainCalculator.UnityUI
             Node prev = _path.Nodes[_path.Nodes.Count - 2];
             bool found = collection.CheckCollision(prev);
             if (!found) return false;
+
+            GetComponent<GraphBuilder>().IsDirty = true;
             _node.Pos.x = prev.Pos.x;
             _node.Pos.y = prev.Pos.y;
             collection.HideNode = _node;
+            // TODO: Fix highlighting and hide edge
             collection.HighlightNode = prev;
             return true;
+        }
+        private void _deletePath()
+        {
+            GetComponent<GraphBuilder>().IsDirty = true;
+            _path.Nodes.Clear();
+            if (_path is River)
+            {
+                Debug.Log($"Delete River");
+                _net.RemoveRiver((River)_path);
+            }
+            else if (_path is Lake)
+            {
+                Debug.Log($"Delete Lake");
+                _net.RemoveLake((Lake)_path);
+            }
         }
 
         private void _placeNode()
         {
+            GetComponent<GraphBuilder>().IsDirty = true;
             Debug.Log("Place node");
             Node snapNode = GetComponent<NodeDragger>().SnapNode;
             if (snapNode != null)
@@ -140,6 +142,14 @@ namespace TerrainCalculator.UnityUI
             _path.Nodes.Add(node);
             _node = node;
             GetComponent<NodeDragger>().EnterMode(_node, setElevation: false);
+        }
+
+        private void _goBack()
+        {
+            GetComponent<GraphBuilder>().IsDirty = true;
+            _path.Nodes.Remove(_node);
+            _node = _path.Last;
+            GetComponent<NodeDragger>().EnterMode(_node, setElevation: _node.Elevation.IsFixed);
         }
     }
 }

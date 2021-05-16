@@ -82,6 +82,7 @@ namespace TerrainCalculator.UnityUI
             if (Input.GetMouseButtonDown(1))
             {
                 // Right mouse, delete node
+                GetComponent<GraphBuilder>().IsDirty = true;
                 GetComponent<State>().Net.RemoveNode(node);
             }
         }

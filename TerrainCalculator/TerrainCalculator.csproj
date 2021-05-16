@@ -77,6 +77,10 @@
     <Compile Include="UnityUI\EdgeCollection.cs" />
     <Compile Include="UnityUI\PlaceNodeMode.cs" />
     <Compile Include="UnityUI\EditNodeMode.cs" />
+    <Compile Include="Grid\ProgressiveDijkstra.cs" />
+    <Compile Include="Grid\DrawLine.cs" />
+    <Compile Include="UnityUI\GridBuilder.cs" />
+    <Compile Include="Grid\Util.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
@@ -104,6 +108,7 @@
     <Folder Include="Network\" />
     <Folder Include="CitiesUI\" />
     <Folder Include="UnityUI\" />
+    <Folder Include="Grid\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

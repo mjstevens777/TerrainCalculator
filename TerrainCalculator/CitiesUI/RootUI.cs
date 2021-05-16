@@ -26,7 +26,7 @@ namespace TerrainCalculator.CitiesUI
             root.backgroundSprite = "MenuPanel2";
             root.name = "TCToolPanel";
             root.width = _width;
-            Util.DebugComponent(root);
+            //Util.DebugComponent(root);
 
             var titlePanel = root.AddUIComponent<UIPanel>();
             titlePanel.canFocus = true;
@@ -68,7 +68,7 @@ namespace TerrainCalculator.CitiesUI
 
             // Anchor to top-right
             root.anchor = UIAnchorStyle.Top | UIAnchorStyle.Right;
-            // TODO: Hack
+            // TODO: Fix positioning on load
             root.eventSizeChanged += (UIComponent c, Vector2 s) =>
             {
                 root.relativePosition = new Vector3(

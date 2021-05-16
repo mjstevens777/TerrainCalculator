@@ -27,11 +27,13 @@ namespace TerrainCalculator.UnityUI
 
         public void SetValue(Node.Key key, float value)
         {
+            GetComponent<GraphBuilder>().IsDirty = true;
             _node.ImplicitValues[key].SetFixed(value);
         }
 
         public void DeleteNode()
         {
+            GetComponent<GraphBuilder>().IsDirty = true;
             WaterNetwork net = GetComponent<State>().Net;
             net.RemoveNode(_node);
             GetComponent<State>().EnterBase();

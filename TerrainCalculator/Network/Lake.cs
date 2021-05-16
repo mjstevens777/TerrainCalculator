@@ -14,6 +14,7 @@ namespace TerrainCalculator.Network
         protected override int _wrapIndex(int index)
         {
             int c = Nodes.Count;
+            if (c == 1 && index != 0) return -1;  // Don't wrap with only one node
             return (index % c + c) % c;
         }
 

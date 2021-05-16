@@ -16,25 +16,32 @@ namespace TerrainCalculator.UnityUI
 
         public void Start()
         {
-            enabled = false;
+            Debug.Log($"NodeDragger start");
+            //enabled = false;
         }
 
         public void EnterMode(Node node, bool setElevation)
         {
-            enabled = true;
+            //enabled = true;
+            Debug.Log($"Dragging with setElevation={setElevation}");
             _node = node;
             _setElevation = setElevation;
         }
 
         public void ExitMode()
         {
-            enabled = false;
+            Debug.Log($"Stopping drag");
+            //enabled = false;
             _node = null;
             _setElevation = false;
         }
 
         public void Update()
         {
+            if (_node == null) return;
+            Debug.Log("NodeDragger update");
+            GetComponent<GraphBuilder>().IsDirty = true;
+
             if (UIView.IsInsideUI()) return;
 
             GetComponent<NodeCollection>().HighlightNode = _node;
@@ -47,7 +54,6 @@ namespace TerrainCalculator.UnityUI
             {
                 _updateFromPlane();
             }
-
         }
 
         private void _updateFromTerrain() {
@@ -61,7 +67,6 @@ namespace TerrainCalculator.UnityUI
             Vector3 _mousePos;
             if (Singleton<TerrainManager>.instance.RayCast(ray, out _mousePos))
             {
-                Debug.Log("Setting position from drag");
                 _node.Pos.x = _mousePos.x;
                 _node.Pos.y = _mousePos.z;
                 _node.Elevation.SetFixed(_mousePos.y);
