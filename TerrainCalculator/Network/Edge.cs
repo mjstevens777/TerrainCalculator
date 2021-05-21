@@ -8,7 +8,7 @@ namespace TerrainCalculator.Network
     public class Edge : QuikGraph.Edge<Node>
     {
 
-        public bool IsFlat { get => Path.IsFlat; }
+        public bool IsLake { get => Path.IsLake; }
         public Path Path;
         public Vector2 SourceGrad;
         public Vector2 TargetGrad;
@@ -16,7 +16,7 @@ namespace TerrainCalculator.Network
         public const int NumSegments = 30;
         public List<Vector2> InterpPoints;
         public List<Vector2> InterpLefts;
-        public List<float> InterpTs;
+        public CumulativeLerp InterpTs;
         public float Distance;
 
         public Edge(Node source, Node target, Path path, Vector2 sourceGrad, Vector2 targetGrad)
@@ -28,7 +28,7 @@ namespace TerrainCalculator.Network
 
             InterpPoints = new List<Vector2>();
             InterpLefts = new List<Vector2>();
-            InterpTs = new List<float>();
+            InterpTs = new CumulativeLerp();
             _compute();
         }
 
@@ -86,6 +86,13 @@ namespace TerrainCalculator.Network
             return triangles;
         }
 
+        public float InterpNodeValue(Lerp t, Node.Key key)
+        {
+            float startValue = Source.ImplicitValues[key].Value;
+            float endValue = Target.ImplicitValues[key].Value;
+            return t.Interp(startValue, endValue);
+        }
+
         private void _compute()
         {
             InterpPoints.Clear();
@@ -93,7 +100,6 @@ namespace TerrainCalculator.Network
             InterpTs.Clear();
 
             Vector2 prev = Source.Pos;
-            float cumDist = 0f;
             for (int i = 0; i <= NumSegments; i++)
             {
                 float t = ((float)i / (float)NumSegments);
@@ -101,15 +107,10 @@ namespace TerrainCalculator.Network
                 InterpPoints.Add(curr);
                 InterpLefts.Add(_interpolateLeft2d(t));
                 float deltaDist = (curr - prev).magnitude;
+                InterpTs.Add(deltaDist);
                 prev = curr;
-                cumDist += deltaDist;
-                InterpTs.Add(cumDist);
             }
-            Distance = cumDist;
-            for (int i = 0; i <= NumSegments; i++)
-            {
-                InterpTs[i] = InterpTs[i] / Distance;
-            }
+            Distance = InterpTs.Total;
         }
 
         private Vector2 _interpolate2d(float t)
@@ -139,39 +140,31 @@ namespace TerrainCalculator.Network
 
         private Vector3 _getPos(int i)
         {
-            float t = InterpTs[i];
+            Lerp t = InterpTs[i];
             Vector2 pos2 = InterpPoints[i];
-            float elevation = _interpNodeValue(t, Node.Key.Elevation);
+            float elevation = InterpNodeValue(t, Node.Key.Elevation);
             return new Vector3(pos2.x, elevation, pos2.y);
         }
 
         private Vector3 _getLeft(int i)
         {
-            float t = InterpTs[i];
+            Lerp t = InterpTs[i];
             Vector2 left2 = InterpLefts[i];
-            float width = _interpNodeValue(t, Node.Key.ShoreWidth);
-            if (!IsFlat)
+            float width = InterpNodeValue(t, Node.Key.ShoreWidth);
+            if (!IsLake)
             {
-                width += _interpNodeValue(t, Node.Key.RiverWidth);
+                width += InterpNodeValue(t, Node.Key.RiverWidth);
             }
             float radius = width / 2;
-            float elevation = _interpNodeValue(t, Node.Key.Elevation);
+            float elevation = InterpNodeValue(t, Node.Key.Elevation);
             return radius * new Vector3(left2.x, 0, left2.y);
         }
 
         private Vector3 _getUp(int i)
         {
-            float t = InterpTs[i];
-            float depth = _interpNodeValue(t, Node.Key.ShoreDepth);
+            Lerp t = InterpTs[i];
+            float depth = InterpNodeValue(t, Node.Key.ShoreDepth);
             return depth * Vector3.up;
-        }
-
-        private float _interpNodeValue(float t, Node.Key key)
-        {
-            float startValue = Source.ImplicitValues[key].Value;
-            float endValue = Target.ImplicitValues[key].Value;
-            return (1 - t) * startValue + t * endValue;
-
         }
     }
 }

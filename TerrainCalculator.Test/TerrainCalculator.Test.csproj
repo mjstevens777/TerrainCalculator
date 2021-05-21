@@ -38,7 +38,7 @@
     <Compile Include="Network\Network.Test.cs" />
     <Compile Include="Network\Edge.Test.cs" />
     <Compile Include="Grid\ProgressiveDijkstra.Test.cs" />
-    <Compile Include="Grid\DrawLine.Test.cs" />
+    <Compile Include="Grid\Segment.Test.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />

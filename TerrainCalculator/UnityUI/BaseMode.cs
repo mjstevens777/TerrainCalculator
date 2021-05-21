@@ -69,6 +69,8 @@ namespace TerrainCalculator.UnityUI
 
             NodeCollection collection = GetComponent<NodeCollection>();
             Node node = collection.CheckCollisions();
+            if (node == null) return;
+
             collection.HighlightNode = node;
 
             if (Input.GetMouseButtonDown(0))

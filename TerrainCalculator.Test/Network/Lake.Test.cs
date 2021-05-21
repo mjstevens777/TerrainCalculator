@@ -63,13 +63,12 @@ namespace TerrainCalculator.Test.Network
 			Assert.That(p.y, Is.EqualTo(-1f).Within(delta));
 
 			// T
-			float t;
-			t = edges[0].InterpTs[0];
-			Assert.That(t, Is.EqualTo(0f).Within(delta));
+			Lerp t = edges[0].InterpTs[0];
+			Assert.That(t.T, Is.EqualTo(0f).Within(delta));
 			t = edges[0].InterpTs[Edge.NumSegments / 2];
-			Assert.That(t, Is.EqualTo(0.5f).Within(delta));
+			Assert.That(t.T, Is.EqualTo(0.5f).Within(delta));
 			t = edges[0].InterpTs[Edge.NumSegments];
-			Assert.That(t, Is.EqualTo(1f).Within(delta));
+			Assert.That(t.T, Is.EqualTo(1f).Within(delta));
 
 			p = edges[0].InterpLefts[Edge.NumSegments];
 			Assert.That(p.x, Is.EqualTo(0f).Within(delta));
@@ -111,5 +110,7 @@ namespace TerrainCalculator.Test.Network
 			Assert.That(p.x, Is.EqualTo(100f).Within(delta));
 			Assert.That(p.y, Is.EqualTo(0f).Within(delta));
 		}
+
+		// TODO: Test lakes with 1 and 2 nodes
 	}
 }

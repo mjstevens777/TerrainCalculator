@@ -81,5 +81,7 @@ namespace TerrainCalculator.Test.Network
 			Assert.That(p.x, Is.EqualTo(-100f).Within(delta));
 			Assert.That(p.y, Is.EqualTo(0f).Within(delta));
 		}
+
+		// TODO: Test river with 1 node
 	}
 }

@@ -15,7 +15,7 @@ namespace TerrainCalculator.Network
         public Node Last { get => Nodes[Nodes.Count - 1]; }
         private List<Vector2> _grads;
 
-        public virtual bool IsFlat { get => false; }
+        public virtual bool IsLake { get => false; }
 
         public Path(WaterNetwork network)
         {

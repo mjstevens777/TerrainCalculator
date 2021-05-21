@@ -9,7 +9,7 @@ namespace TerrainCalculator.Network
         {
         }
 
-        public override bool IsFlat { get => true; }
+        public override bool IsLake { get => true; }
 
         protected override int _wrapIndex(int index)
         {

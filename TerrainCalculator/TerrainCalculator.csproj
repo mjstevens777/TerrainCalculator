@@ -32,7 +32,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="LoadingExtension.cs" />
+    <Compile Include="Extension.cs" />
     <Compile Include="Mod.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="OptionsFramework\Attibutes\AbstractOptionsAttribute.cs" />
@@ -68,7 +68,6 @@
     <Compile Include="CitiesUI\PathPanel.cs" />
     <Compile Include="CitiesUI\NodePanel.cs" />
     <Compile Include="UnityUI\NodeCollection.cs" />
-    <Compile Include="Network\Segment.cs" />
     <Compile Include="Network\Node.cs" />
     <Compile Include="UnityUI\NodeDragger.cs" />
     <Compile Include="UnityUI\GraphBuilder.cs" />
@@ -78,9 +77,10 @@
     <Compile Include="UnityUI\PlaceNodeMode.cs" />
     <Compile Include="UnityUI\EditNodeMode.cs" />
     <Compile Include="Grid\ProgressiveDijkstra.cs" />
-    <Compile Include="Grid\DrawLine.cs" />
-    <Compile Include="UnityUI\GridBuilder.cs" />
+    <Compile Include="Grid\Segment.cs" />
     <Compile Include="Grid\Util.cs" />
+    <Compile Include="Lerp.cs" />
+    <Compile Include="Grid\GridBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />

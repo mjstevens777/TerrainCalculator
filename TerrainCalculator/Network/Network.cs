@@ -161,7 +161,7 @@ namespace TerrainCalculator.Network
                 if (node.Elevation.IsFixed) fixedNodes.Add(node);
             }
 
-            Func<Edge, double> edgeCost = e => e.IsFlat ? 0.0 : e.Distance;
+            Func<Edge, double> edgeCost = e => e.IsLake ? 0.0 : e.Distance;
 
             foreach (Node root in fixedNodes)
             {
@@ -174,7 +174,7 @@ namespace TerrainCalculator.Network
                     {
                         throw new NodeException("Elevation defined in too many places", edge.Target);
                     }
-                    if (edge.IsFlat)
+                    if (edge.IsLake)
                     {
                         edge.Target.Elevation.SetImplicit(edge.Source.Elevation.Value);
                     } else
@@ -256,36 +256,28 @@ namespace TerrainCalculator.Network
 
         private void _interpolateChainValue(List<Node> chain, Node.Key key)
         {
-            float totalDistance = 0;
+            CumulativeLerp cumLerp = new CumulativeLerp();
+            List<Edge> edges = new List<Edge>();
             foreach (int i in Enumerable.Range(0, chain.Count - 1))
             {
                 Node start = chain[i];
                 Node end = chain[i + 1];
                 Edge edge;
                 _graph.TryGetEdge(start, end, out edge);
-                if (edge == null)
-                {
-                    _graph.TryGetEdge(end, start, out edge);
-                }
+                if (edge == null) _graph.TryGetEdge(end, start, out edge);
                 if (edge == null) throw new IndexOutOfRangeException("Could not find edge for chain");
-                totalDistance += edge.Distance;
+                edges.Add(edge);
+                cumLerp.Add(edge.Distance);
             }
             float startValue = chain[0].ImplicitValues[key].Value;
             float endValue = chain[chain.Count - 1].ImplicitValues[key].Value;
 
-            float cumDistance = 0;
             foreach (int i in Enumerable.Range(0, chain.Count - 2))
             {
-                Node start = chain[i];
-                Node end = chain[i + 1];
-                Edge edge;
-                _graph.TryGetEdge(start, end, out edge);
-                if (edge == null) throw new IndexOutOfRangeException("Could not find edge for chain");
-                cumDistance += edge.Distance;
-                float t = cumDistance / totalDistance;
-                FlagDouble value = end.ImplicitValues[key];
-                if (value.IsSet) throw new NodeException($"{key.ToString()} defined multiple times", end);
-                value.SetImplicit(t * endValue + (1 - t) * startValue);
+                Node node = chain[i + 1];
+                FlagDouble value = node.ImplicitValues[key];
+                if (value.IsSet) throw new NodeException($"{key.ToString()} defined multiple times", node);
+                value.SetImplicit(cumLerp[i].Interp(startValue, endValue));
             }
         }
 

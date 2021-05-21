@@ -12,17 +12,18 @@ namespace TerrainCalculator.Grid
         public ZValue(float landSlope, float riverSlope, float elevation)
         {
             LandSlope = landSlope;
+            if (LandSlope < 0) throw new Exception("LandSlope cannot be negative");
             RiverSlope = riverSlope;
+            if (RiverSlope < 0) throw new Exception("RiverSlope cannot be negative");
             Elevation = elevation;
         }
 
-        public ZValue NextValue(ZValue start, int di, int dj)
+        public ZValue NextValue(ZValue start, float distance)
         {
             float thisSlope = start.RiverSlope + LandSlope;
             float otherSlope = (start.RiverSlope + start.LandSlope);
             float slope = (thisSlope + otherSlope) / 2f;
-            float dist = Mathf.Sqrt(di * di + dj * dj);
-            float deltaZ = slope * dist;
+            float deltaZ = slope * distance;
             return new ZValue(
                 landSlope: LandSlope,
                 riverSlope: start.RiverSlope,
