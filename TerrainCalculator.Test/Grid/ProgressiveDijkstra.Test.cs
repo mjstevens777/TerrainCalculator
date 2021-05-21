@@ -21,9 +21,9 @@ namespace TerrainCalculator.Test.Grid
 		{
 
 
-			ZValue defaultZ = new ZValue(landSlope: 0.5f, riverSlope: 0, elevation: 500);
+			GridValue defaultZ = new GridValue(landSlope: 0.5f);
 
-			ZValue[,] grid = new ZValue[5, 5];
+			GridValue[,] grid = new GridValue[5, 5];
 			for (int i = 0; i < 5; i++)
             {
 				for (int j = 0; j < 5; j++)
@@ -31,10 +31,10 @@ namespace TerrainCalculator.Test.Grid
 					grid[i, j] = defaultZ;
                 }
             }
-			var algorithm = new ProgressiveDijkstra<ZValue>(grid);
+			var algorithm = new ProgressiveDijkstra<GridValue>(grid);
 
-			for (int i = 0; i < 5; i++) grid[i, 2] = new ZValue(0.5f, 1, elevation: i + 1);
-			grid[2, 2] = new ZValue(0.5f, 1, elevation: 10);  // Make an outlier above the rest
+			for (int i = 0; i < 5; i++) grid[i, 2] = new GridValue(0.5f, 1, 1, 1, elevation: i + 1, shoreDistance: 0);
+			grid[2, 2] = new GridValue(0.5f, 1, 1, 1, elevation: 10, shoreDistance: 0);  // Make an outlier above the rest
 			algorithm.Lock(2, 2);
 			for (int i = 0; i < 5; i++) algorithm.Lock(i, 2);
 
@@ -70,9 +70,9 @@ namespace TerrainCalculator.Test.Grid
 			
 
 
-			ZValue defaultZ = new ZValue(landSlope: 0.1f, riverSlope: 0, elevation: 500);
+			GridValue defaultZ = new GridValue(landSlope: 0.1f);
 
-			ZValue[,] grid = new ZValue[1081, 1081];
+			GridValue[,] grid = new GridValue[1081, 1081];
 			for (int i = 0; i < 1081; i++)
 			{
 				for (int j = 0; j < 1081; j++)
@@ -81,13 +81,14 @@ namespace TerrainCalculator.Test.Grid
 				}
 			}
 
-			var algorithm = new ProgressiveDijkstra<ZValue>(grid, neighborRadius: 1);
+			var algorithm = new ProgressiveDijkstra<GridValue>(grid, neighborRadius: 1);
 
+			// Set a couple of sparse points
 			for (int i = 0; i < 1081; i+=900)
             {
 				for (int j = 0; j < 1081; j += 900)
                 {
-					grid[i, j] = new ZValue(0.1f, 0, elevation: 0);
+					grid[i, j] = new GridValue(0.1f, 0, 1, 1, elevation: 0, shoreDistance: 0);
 					algorithm.Lock(i, j);
 				}
 			}
@@ -126,6 +127,46 @@ namespace TerrainCalculator.Test.Grid
 				{
 					Assert.That(blockSet[i, j], Is.EqualTo(1), $"Pixel {i} {j} should be part of one block");
 				}
+			}
+		}
+
+		[Test]
+		public void TestShoreDistance()
+		{
+			GridValue defaultValue = new GridValue(landSlope: 0.1f);
+
+			GridValue[,] grid = new GridValue[11, 1];
+			for (int i = 0; i < 11; i++)
+			{
+				grid[i, 0] = defaultValue;
+			}
+
+			var algorithm = new ProgressiveDijkstra<GridValue>(grid, neighborRadius: 1);
+			grid[5, 0] = new GridValue(
+				landSlope: 0.1f, riverSlope: 0, riverWidth: 3, shoreWidth: 4, shoreDepth: 0.1f, elevation: 1, shoreDistance: 0);
+			algorithm.Lock(5, 0);
+
+			bool isDone = algorithm.IterateMulti(1000);
+			Assert.IsTrue(isDone, "Loop should terminate");
+
+
+			// Breakpoints at 1.5 and 3.5 from center
+			float[] expectedDist = new float[]
+				{ 2, 2, 1.75f, 1.25f, 0.6666f, 0, 0.66666f, 1.25f, 1.75f, 2, 2 };
+			float[] expectedZ = new float[]
+				{ 1.5f, 1.4f, 1.3f, 1.2f, 1.1f, 1, 1.1f, 1.2f, 1.3f, 1.4f, 1.5f };
+			float[] expectedFinalZ = new float[]
+				{ 1.5f, 1.4f, 1.275f, 1.125f, 1, 0.9f, 1, 1.125f, 1.275f, 1.4f, 1.5f };
+
+			for (int i = 0; i < 11; i++)
+			{
+				GridValue value = algorithm.Get(i, 0);
+				Assert.That(value.ShoreDistance, Is.EqualTo(expectedDist[i]).Within(0.01f), $"Distance at {i}");
+				Assert.That(value.RiverWidth, Is.EqualTo(3).Within(0.01f), $"RiverWidth at {i}");
+				Assert.That(value.ShoreWidth, Is.EqualTo(4).Within(0.01f), $"ShoreWidth at {i}");
+				Assert.That(value.Elevation, Is.EqualTo(expectedZ[i]).Within(0.01f), $"Elevation at {i}");
+				Assert.That(value.FinalElevation, Is.EqualTo(expectedFinalZ[i]).Within(0.01f), $"FinalElevation at {i}");
+				Console.WriteLine($"{i} {value.Elevation} {value.FinalElevation}");
 			}
 		}
 	}

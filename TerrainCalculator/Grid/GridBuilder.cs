@@ -13,7 +13,7 @@ namespace TerrainCalculator.Grid
         public ICities.ITerrain Terrain;
         public IResource Resource;
         private List<Segment> _segments;
-        ProgressiveDijkstra<ZValue> _algorithm;
+        ProgressiveDijkstra<GridValue> _algorithm;
         private bool _wasDirty;
 
         public void Update()
@@ -49,20 +49,23 @@ namespace TerrainCalculator.Grid
             int gridSize = 1081;
             float gridSpacing = Terrain.cellSize;
 
-            ZValue[,] grid = new ZValue[gridSize, gridSize];
+            GridValue[,] grid = new GridValue[gridSize, gridSize];
             for (int i = 0; i < gridSize; i++)
             {
                 for (int j = 0; j < gridSize; j++)
                 {
                     float landSlope = 4; // TODO: Look up from grid
                     float landSlopeRad = Mathf.Deg2Rad * landSlope;
-                    grid[i, j] = new ZValue(
+                    grid[i, j] = new GridValue(
                         landSlope: Mathf.Tan(landSlopeRad) * gridSpacing,
                         riverSlope: 0,
-                        elevation: 1024);
+                        riverWidth: 0,
+                        shoreWidth: 0,
+                        elevation: 1024,
+                        shoreDistance: 2);
                 }
             }
-            _algorithm = new ProgressiveDijkstra<ZValue>(grid, neighborRadius: 1);
+            _algorithm = new ProgressiveDijkstra<GridValue>(grid, neighborRadius: 1);
 
             Debug.Log("Drawing segments");
             foreach (var segment in _segments)
@@ -76,10 +79,13 @@ namespace TerrainCalculator.Grid
                     if (i >= 1081 || j >= 1081) continue;
                     float riverRad = node.RiverSlope * Mathf.Deg2Rad;
 
-                    grid[i, j] = new ZValue(
+                    grid[i, j] = new GridValue(
                         landSlope: grid[i, j].LandSlope,
                         riverSlope: Mathf.Tan(riverRad) * gridSpacing,
-                        elevation: node.Elevation);
+                        riverWidth: node.RiverWidth / gridSpacing,
+                        shoreWidth: node.ShoreWidth / gridSpacing,
+                        elevation: node.Elevation,
+                        shoreDistance: segment.IsLake ? 1 : 0);
                     _algorithm.Lock(i, j);
                 }
             }
@@ -100,8 +106,8 @@ namespace TerrainCalculator.Grid
                 {
                     for (int j = minJ; j < maxJ; j++)
                     {
-                        ZValue value = _algorithm.Get(i, j);
-                        tm.RawHeights[i * 1081 + j] = Terrain.HeightToRaw(value.Elevation);
+                        GridValue value = _algorithm.Get(i, j);
+                        tm.RawHeights[i * 1081 + j] = Terrain.HeightToRaw(value.FinalElevation);
                     }
                 }
                 
