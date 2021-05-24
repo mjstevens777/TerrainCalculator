@@ -17,9 +17,11 @@ namespace TerrainCalculator.Network
 
     public class WaterNetwork
     {
+        public List<List<Edge>> EdgesByPath { get; private set; }
         List<Node> _nodes;
         List<Lake> _lakes;
         List<River> _rivers;
+        
         Graph _graph;
 
         public WaterNetwork()
@@ -133,11 +135,14 @@ namespace TerrainCalculator.Network
         private void _buildGraph()
         {
             _graph = new Graph();
+            EdgesByPath = new List<List<Edge>>();
 
             foreach (River river in _rivers)
             {
+                List<Edge> edges = river.GetEdges();
+                EdgesByPath.Add(edges);
                 _graph.AddVertex(river.First); // In case there are no edges
-                foreach (Edge edge in river.GetEdges())
+                foreach (Edge edge in edges)
                 {
                     _graph.AddVerticesAndEdge(edge);
                 }
@@ -145,8 +150,11 @@ namespace TerrainCalculator.Network
 
             foreach (Lake lake in _lakes)
             {
+                List<Edge> edges = lake.GetEdges();
+                EdgesByPath.Add(edges);
+
                 _graph.AddVertex(lake.First); // In case there are no edges
-                foreach (Edge edge in lake.GetEdges())
+                foreach (Edge edge in edges)
                 {
                     _graph.AddVerticesAndEdge(edge);
                 }

@@ -32,9 +32,24 @@ namespace TerrainCalculator.Grid
         {
             get
             {
-                if (ShoreDistance >= 2) return Elevation;
-                else if (ShoreDistance > 1) return Elevation - (2 - ShoreDistance) * ShoreDepth;
-                else return Elevation - ShoreDepth;
+                if (ShoreDistance >= 2)
+                {
+                    // Normal
+                    return Elevation;
+                }
+                else if (ShoreDistance > 1)
+                {
+                    // Interpolate the shore
+                    float t = 2 - ShoreDistance;
+                    // Smoothstep
+                    float smoothT = t * t * (3 - 2 * t);
+                    return Elevation - smoothT * ShoreDepth;
+                }
+                else
+                {
+                    // River bed
+                    return Elevation - ShoreDepth;
+                }
             }
         }
 

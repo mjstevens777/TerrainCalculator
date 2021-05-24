@@ -13,7 +13,7 @@ namespace TerrainCalculator.UnityUI
 
         public bool IsDirty;
         public bool IsStable;
-        public List<Segment> Segments;
+        public List<List<Segment>> Segments;
 
         public void Start()
         {
@@ -36,27 +36,32 @@ namespace TerrainCalculator.UnityUI
 
         private void _copyNetwork()
         {
-            List<Segment> newSegments = new List<Segment>();
-            foreach (var edge in _net.Edges)
+            List<List<Segment>> newSegments = new List<List<Segment>>();
+            foreach (var edges in _net.EdgesByPath)
             {
-                List<SegmentNode> edgeNodes = new List<SegmentNode>();
-                for (int i = 0; i < edge.InterpPoints.Count; i++)
+                List<Segment> pathSegments = new List<Segment>();
+                foreach (var edge in edges)
                 {
-                    Lerp t = edge.InterpTs[i];
-                    SegmentNode node = new SegmentNode(
-                        edge.InterpPoints[i],
-                        elevation: edge.InterpNodeValue(t, Node.Key.Elevation),
-                        riverSlope: edge.InterpNodeValue(t, Node.Key.RiverSlope),
-                        riverWidth: edge.InterpNodeValue(t, Node.Key.RiverWidth),
-                        shoreDepth: edge.InterpNodeValue(t, Node.Key.ShoreDepth),
-                        shoreWidth: edge.InterpNodeValue(t, Node.Key.ShoreWidth));
-                    edgeNodes.Add(node);
-                }
+                    List<SegmentNode> edgeNodes = new List<SegmentNode>();
+                    for (int i = 0; i < edge.InterpPoints.Count; i++)
+                    {
+                        Lerp t = edge.InterpTs[i];
+                        SegmentNode node = new SegmentNode(
+                            edge.InterpPoints[i],
+                            elevation: edge.InterpNodeValue(t, Node.Key.Elevation),
+                            riverSlope: edge.InterpNodeValue(t, Node.Key.RiverSlope),
+                            riverWidth: edge.InterpNodeValue(t, Node.Key.RiverWidth),
+                            shoreDepth: edge.InterpNodeValue(t, Node.Key.ShoreDepth),
+                            shoreWidth: edge.InterpNodeValue(t, Node.Key.ShoreWidth));
+                        edgeNodes.Add(node);
+                    }
 
-                for (int i = 0; i < edgeNodes.Count - 1; i++)
-                {
-                    newSegments.Add(new Segment(edgeNodes[i], edgeNodes[i + 1], edge.IsLake));
+                    for (int i = 0; i < edgeNodes.Count - 1; i++)
+                    {
+                        pathSegments.Add(new Segment(edgeNodes[i], edgeNodes[i + 1], edge.IsLake));
+                    }
                 }
+                newSegments.Add(pathSegments);
             }
 
             Segments = newSegments;

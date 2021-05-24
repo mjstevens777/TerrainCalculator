@@ -41,6 +41,11 @@ namespace TerrainCalculator.UnityUI
             HideNode = null;
         }
 
+        public void OnDestroy()
+        {
+            foreach (var primitive in _primitives) Destroy(primitive);
+        }
+
         public void _syncNodes()
         {
             List<Node> nodes = new List<Node>(_net.Nodes);

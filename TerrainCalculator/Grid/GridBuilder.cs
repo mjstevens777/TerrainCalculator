@@ -12,9 +12,11 @@ namespace TerrainCalculator.Grid
     {
         private IManagers _managers;
         private ITerrain _terrain { get => _managers.terrain; }
+        private int _gridSize { get => _terrain.heightMapResolution + 1; }
+        private float _gridSpacing { get => _terrain.cellSize; }
         private IResource _resource { get => _managers.resource; }
         private GraphBuilder _graphBuilder;
-        private List<Segment> _segments;
+        private List<List<Segment>> _segments;
         private ProgressiveDijkstra<GridValue> _algorithm;
         private TerrainSetter _terrainSetter;
 
@@ -30,23 +32,20 @@ namespace TerrainCalculator.Grid
         {
             _findGraphBuilder();
             if (_graphBuilder == null) return;
+            bool graphDirty = _graphBuilder.Segments != _segments;
+            bool resourceDirty = ResourceExtension.IsDirty;
             if (_isSettingToZero)
             {
                 _updateSetToZero();
             }
-            else if (!_graphBuilder.IsStable)
+            else if (!_graphBuilder.IsStable || resourceDirty)
             {
                 _startSetToZero();
+
             }
-            else if (_graphBuilder.Segments != _segments)
+            else if (graphDirty)
             {
-                _segments = _graphBuilder.Segments;
-                _abortCalculation();
-                _abortSetToZero();
-                if (_segments.Count > 0)
-                {
-                    _startCalculation();
-                }
+                _startCalculation();
             }
             else if (_isCalculating)
             {
@@ -84,6 +83,7 @@ namespace TerrainCalculator.Grid
             _terrainSetter.SetAll(40);
             _isSetToZeroStarted = true;
             _isSetToZeroCompleted = false;
+            ResourceExtension.IsDirty = false;
         }
 
         private void _abortSetToZero()
@@ -104,24 +104,25 @@ namespace TerrainCalculator.Grid
         private void _startCalculation()
         {
             Debug.Log("Starting terrain calculation");
+            _segments = _graphBuilder.Segments;
+            ResourceExtension.IsDirty = false;
+            _abortCalculation();
+            _abortSetToZero();
+            if (_segments.Count == 0) return;
 
+            //var tm = Singleton<TerrainManager>.instance;
+            //tm.RenderTopographyInfo = true;
 
-            int gridSize = 1081;
-            float gridSpacing = _managers.terrain.cellSize;
-
-            GridValue[,] grid = new GridValue[gridSize, gridSize];
+            GridValue[,] grid = new GridValue[_gridSize, _gridSize];
             float[,] slopeGrid = _getSlopeGrid();
-            for (int i = 0; i < gridSize; i++)
+            for (int i = 0; i < _gridSize; i++)
             {
-                for (int j = 0; j < gridSize; j++)
+                for (int j = 0; j < _gridSize; j++)
                 {
                     float landSlope = _getSlopeFromGrid(slopeGrid, i, j);
                     float landSlopeRad = Mathf.Deg2Rad * landSlope;
                     grid[i, j] = new GridValue(
-                        landSlope: Mathf.Tan(landSlopeRad) * gridSpacing,
-                        riverSlope: 0,
-                        riverWidth: 0,
-                        shoreWidth: 0,
+                        landSlope: Mathf.Tan(landSlopeRad) * _gridSpacing,
                         elevation: 1024,
                         shoreDistance: 2);
                 }
@@ -129,7 +130,17 @@ namespace TerrainCalculator.Grid
             _algorithm = new ProgressiveDijkstra<GridValue>(grid, neighborRadius: 3);
 
             Debug.Log("Drawing segments");
-            foreach (var segment in _segments)
+            foreach (var pathSegments in _segments)
+            {
+                _drawPath(grid, pathSegments);
+            }
+        }
+
+        private void _drawPath(GridValue[,] grid, List<Segment> segments)
+        {
+            if (segments.Count == 0) return;
+
+            foreach (var segment in segments)
             {
                 segment.RemapToTerrain((ITerrain)_terrain);
                 foreach (var node in segment.Draw())
@@ -142,13 +153,41 @@ namespace TerrainCalculator.Grid
 
                     grid[i, j] = new GridValue(
                         landSlope: grid[i, j].LandSlope,
-                        riverSlope: Mathf.Tan(riverRad) * gridSpacing,
-                        riverWidth: node.RiverWidth / gridSpacing,
-                        shoreWidth: node.ShoreWidth / gridSpacing,
+                        riverSlope: Mathf.Tan(riverRad) * _gridSpacing,
+                        riverWidth: node.RiverWidth / _gridSpacing,
+                        shoreWidth: node.ShoreWidth / _gridSpacing,
+                        shoreDepth: node.ShoreDepth,
                         elevation: node.Elevation,
                         shoreDistance: segment.IsLake ? 1 : 0);
                     _algorithm.Lock(i, j);
                 }
+            }
+
+            if (segments[0].IsLake) _fillLake(grid, segments);
+        }
+
+        private void _fillLake(GridValue[,] grid, List<Segment> segments)
+        {
+            Polygon polygon = new Polygon(segments);
+            int[,] coords = polygon.Compute();
+            SegmentNode node = segments[0].Start;
+            for (int row = 0; row < coords.GetLength(0); row++)
+            {
+                int i = coords[row, 0];
+                int j = coords[row, 1];
+                if (i < 0 || j < 0) continue;
+                if (i >= _gridSize || j >= _gridSize) continue;
+
+                float riverRad = node.RiverSlope * Mathf.Deg2Rad;
+                grid[i, j] = new GridValue(
+                    landSlope: grid[i, j].LandSlope,
+                    riverSlope: Mathf.Tan(riverRad) * _gridSpacing,
+                    riverWidth: node.RiverWidth / _gridSpacing,
+                    shoreWidth: node.ShoreWidth / _gridSpacing,
+                    shoreDepth: node.ShoreDepth,
+                    elevation: node.Elevation,
+                    shoreDistance: 1);
+                _algorithm.Lock(i, j);
             }
         }
 

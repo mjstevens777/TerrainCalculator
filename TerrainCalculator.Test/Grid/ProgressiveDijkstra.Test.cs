@@ -23,12 +23,12 @@ namespace TerrainCalculator.Test.Grid
 
 			GridValue[,] grid = new GridValue[5, 5];
 			for (int i = 0; i < 5; i++)
-            {
+			{
 				for (int j = 0; j < 5; j++)
-                {
+				{
 					grid[i, j] = defaultZ;
-                }
-            }
+				}
+			}
 			var algorithm = new ProgressiveDijkstra<GridValue>(grid);
 
 			for (int i = 0; i < 5; i++) grid[i, 2] = new GridValue(0.5f, 1, 1, 1, elevation: i + 1, shoreDistance: 0);
@@ -56,9 +56,9 @@ namespace TerrainCalculator.Test.Grid
 				for (int j = 0; j < 5; j++)
 				{
 					float actual = algorithm.Get(i, j).Elevation;
-                    Assert.That(actual, Is.EqualTo(expectedZ[i, j]).Within(0.01f),
-                                $"Elevation a {i} {j}");
-                }
+					Assert.That(actual, Is.EqualTo(expectedZ[i, j]).Within(0.01f),
+								$"Elevation a {i} {j}");
+				}
 			}
 		}
 
@@ -79,10 +79,10 @@ namespace TerrainCalculator.Test.Grid
 			var algorithm = new ProgressiveDijkstra<GridValue>(grid, neighborRadius: 1);
 
 			// Set a couple of sparse points
-			for (int i = 0; i < 1081; i+=900)
-            {
+			for (int i = 0; i < 1081; i += 900)
+			{
 				for (int j = 0; j < 1081; j += 900)
-                {
+				{
 					grid[i, j] = new GridValue(0.1f, 0, 1, 1, elevation: 0, shoreDistance: 0);
 					algorithm.Lock(i, j);
 				}
@@ -91,13 +91,13 @@ namespace TerrainCalculator.Test.Grid
 			bool isDone = false;
 			int[,] valueSet = new int[1081, 1081];
 			for (int iteration = 0; iteration < 500; iteration++)
-            {
+			{
 				isDone = algorithm.IterateMulti(100000);
 
 				while (true)
 				{
 					int i, j;
-                    bool found = algorithm.GetReady(out i, out j, out _);
+					bool found = algorithm.GetReady(out i, out j, out _);
 					if (!found) break;
 					valueSet[i, j]++;
 				}
@@ -155,6 +155,11 @@ namespace TerrainCalculator.Test.Grid
 				Console.WriteLine($"{i} {value.Elevation} {value.FinalElevation}");
 			}
 		}
+	}
+
+	[TestFixture]
+	public class GridValueTest
+	{
 
 		[Test]
 		public void TestFinalZ()
@@ -162,10 +167,10 @@ namespace TerrainCalculator.Test.Grid
 			assertFinalZ(0, 10, 4, 6);
 			assertFinalZ(0.5f, 10, 4, 6);
 			assertFinalZ(1, 10, 4, 6);
-			assertFinalZ(1.25f, 10, 4, 7);
-			assertFinalZ(1.5f, 10, 4, 8);
-			assertFinalZ(1.75f, 10, 4, 9);
-			assertFinalZ(2, 10, 4, 10);
+            assertFinalZ(1.25f, 10, 4, 6.625f);
+            assertFinalZ(1.5f, 10, 4, 8);
+            assertFinalZ(1.75f, 10, 4, 9.375f);
+            assertFinalZ(2, 10, 4, 10);
 			assertFinalZ(3, 10, 4, 10);
 		}
 

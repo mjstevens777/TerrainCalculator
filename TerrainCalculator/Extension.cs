@@ -89,4 +89,26 @@ namespace TerrainCalculator
             LoadingExtension.DestroyComponents();
         }
     }
+
+    public class ResourceExtension : ResourceExtensionBase
+    {
+        public static bool IsDirty;
+
+
+        public override void OnCreated(IResource resource)
+        {
+            Debug.Log("Creating resource extension");
+        }
+
+        public override void OnAfterResourcesModified(int x, int z, NaturalResource type, int amount)
+        {
+            Debug.Log("Resources modified");
+            IsDirty = true;
+        }
+
+        public override void OnReleased()
+        {
+            Debug.Log("Destroying resource extension");
+        }
+    }
 }
