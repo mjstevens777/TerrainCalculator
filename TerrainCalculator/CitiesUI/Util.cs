@@ -68,7 +68,7 @@ namespace TerrainCalculator.CitiesUI
 
         private static void _print(string s)
         {
-            Debug.Log(s);
+            //Debug.Log(s);
         }
     }
 }

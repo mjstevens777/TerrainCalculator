@@ -12,6 +12,7 @@ namespace TerrainCalculator.UnityUI
         private WaterNetwork _net;
 
         public bool IsDirty;
+        public bool IsStable;
         public List<Segment> Segments;
 
         public void Start()
@@ -22,7 +23,12 @@ namespace TerrainCalculator.UnityUI
 
         public void Update()
         {
-            if (!IsDirty) return;
+            if (!IsDirty)
+            {
+                IsStable = true;
+                return;
+            }
+            IsStable = false;
             IsDirty = false;
             _net.InterpolateAll();
             _copyNetwork();

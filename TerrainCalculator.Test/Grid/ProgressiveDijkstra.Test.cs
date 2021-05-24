@@ -8,7 +8,7 @@ using UnityEngine;
 namespace TerrainCalculator.Test.Grid
 {
 	[TestFixture]
-	public class ZCalculatorTest
+	public class ProgressiveDijkstraTest
 	{
 
 		[SetUp]
@@ -17,10 +17,8 @@ namespace TerrainCalculator.Test.Grid
 		}
 
 		[Test]
-		public void TestZValue()
+		public void TestZValueSimple()
 		{
-
-
 			GridValue defaultZ = new GridValue(landSlope: 0.5f);
 
 			GridValue[,] grid = new GridValue[5, 5];
@@ -38,9 +36,9 @@ namespace TerrainCalculator.Test.Grid
 			algorithm.Lock(2, 2);
 			for (int i = 0; i < 5; i++) algorithm.Lock(i, 2);
 
-			bool done = algorithm.IterateMulti(100);
+			bool done = algorithm.IterateMulti(50);
 			Assert.IsFalse(done, "Loop should not terminate yet");
-			done = algorithm.IterateMulti(100);
+			done = algorithm.IterateMulti(50);
 			Assert.IsTrue(done, "Loop should terminate");
 
 
@@ -65,11 +63,8 @@ namespace TerrainCalculator.Test.Grid
 		}
 
 		[Test]
-		public void TestBlocks()
+		public void TestFullSize()
 		{
-			
-
-
 			GridValue defaultZ = new GridValue(landSlope: 0.1f);
 
 			GridValue[,] grid = new GridValue[1081, 1081];
@@ -93,39 +88,33 @@ namespace TerrainCalculator.Test.Grid
 				}
 			}
 
-
 			bool isDone = false;
-			int[,] blockSet = new int[1081, 1081];
+			int[,] valueSet = new int[1081, 1081];
 			for (int iteration = 0; iteration < 500; iteration++)
             {
 				isDone = algorithm.IterateMulti(100000);
-				int minI, minJ, maxI, maxJ;
-				
-				while (algorithm.GetBlockReady(out minI, out minJ, out maxI, out maxJ))
-                {
-					Console.WriteLine($"Block ready on step {iteration} {minI} {minJ} {maxI} {maxJ}");
-					for (int i = minI; i < maxI; i++)
-                    {
-						for (int j = minJ; j < maxJ; j++)
-                        {
-							blockSet[i, j]++;
-                        }
-                    }
+
+				while (true)
+				{
+					int i, j;
+                    bool found = algorithm.GetReady(out i, out j, out _);
+					if (!found) break;
+					valueSet[i, j]++;
 				}
 
 				if (isDone)
-                {
+				{
 					Console.WriteLine($"Finished on step {iteration}");
 					break;
-                }
-            }
+				}
+			}
 			Assert.IsTrue(isDone, "Loop should terminate");
 
 			for (int i = 0; i < 1081; i++)
 			{
 				for (int j = 0; j < 1081; j++)
 				{
-					Assert.That(blockSet[i, j], Is.EqualTo(1), $"Pixel {i} {j} should be part of one block");
+					Assert.That(valueSet[i, j], Is.EqualTo(1), $"Pixel {i} {j} should be part of one block");
 				}
 			}
 		}
@@ -155,8 +144,6 @@ namespace TerrainCalculator.Test.Grid
 				{ 2, 2, 1.75f, 1.25f, 0.6666f, 0, 0.66666f, 1.25f, 1.75f, 2, 2 };
 			float[] expectedZ = new float[]
 				{ 1.5f, 1.4f, 1.3f, 1.2f, 1.1f, 1, 1.1f, 1.2f, 1.3f, 1.4f, 1.5f };
-			float[] expectedFinalZ = new float[]
-				{ 1.5f, 1.4f, 1.275f, 1.125f, 1, 0.9f, 1, 1.125f, 1.275f, 1.4f, 1.5f };
 
 			for (int i = 0; i < 11; i++)
 			{
@@ -165,9 +152,31 @@ namespace TerrainCalculator.Test.Grid
 				Assert.That(value.RiverWidth, Is.EqualTo(3).Within(0.01f), $"RiverWidth at {i}");
 				Assert.That(value.ShoreWidth, Is.EqualTo(4).Within(0.01f), $"ShoreWidth at {i}");
 				Assert.That(value.Elevation, Is.EqualTo(expectedZ[i]).Within(0.01f), $"Elevation at {i}");
-				Assert.That(value.FinalElevation, Is.EqualTo(expectedFinalZ[i]).Within(0.01f), $"FinalElevation at {i}");
 				Console.WriteLine($"{i} {value.Elevation} {value.FinalElevation}");
 			}
+		}
+
+		[Test]
+		public void TestFinalZ()
+		{
+			assertFinalZ(0, 10, 4, 6);
+			assertFinalZ(0.5f, 10, 4, 6);
+			assertFinalZ(1, 10, 4, 6);
+			assertFinalZ(1.25f, 10, 4, 7);
+			assertFinalZ(1.5f, 10, 4, 8);
+			assertFinalZ(1.75f, 10, 4, 9);
+			assertFinalZ(2, 10, 4, 10);
+			assertFinalZ(3, 10, 4, 10);
+		}
+
+		private void assertFinalZ(float shoreDistance, float elevation, float shoreDepth,
+								  float expected, float delta = 0.01f)
+        {
+			GridValue value = new GridValue(
+				0, 0, 0, 0,
+				shoreDepth: shoreDepth, elevation: elevation,
+				shoreDistance: shoreDistance);
+			Assert.That(value.FinalElevation, Is.EqualTo(expected).Within(delta), $"d={shoreDistance}");
 		}
 	}
 }

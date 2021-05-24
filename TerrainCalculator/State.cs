@@ -13,13 +13,14 @@ namespace TerrainCalculator
          * Base
          */
         public WaterNetwork Net;
+        private UIComponent _root;
 
         public void Start()
         {
             Debug.Log("State start");
             Net = new WaterNetwork();
             var view = UIView.GetAView();
-            RootUI.Build(view, this);
+            _root = RootUI.Build(view, this);
             EnterBase();
         }
 
@@ -142,6 +143,11 @@ namespace TerrainCalculator
         {
             Debug.Log($"Node Delete");
             GetComponent<EditNodeMode>().DeleteNode();
+        }
+
+        public void OnDestroy()
+        {
+            Destroy(_root);
         }
     }
 }

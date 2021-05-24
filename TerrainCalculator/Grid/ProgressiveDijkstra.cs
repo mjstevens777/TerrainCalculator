@@ -38,45 +38,59 @@ namespace TerrainCalculator.Grid
         public int BlockWidth { get => Width / BlockSize + 1; }
         public int BlockHeight { get => Height / BlockSize + 1; }
         protected GridValue[,] _grid;
-        private int[,] _blockRemainingCount;
-        private bool[,] _blockVisited;
         protected bool[,] _visited;
         private int _remaining;
+        private Queue<GridNode> _ready;
 
         private MinHeap<GridNode> _pq;
 
-        public float NeighborRadius;
+        private List<GridNeighbor> _gridNeighbors;
 
         public ProgressiveDijkstra(GridValue[,] grid, float neighborRadius = 2, int blockSize = 110)
         {
-            NeighborRadius = neighborRadius;
             BlockSize = blockSize;
 
             Height = grid.GetLength(0);
             Width = grid.GetLength(1);
 
             _pq = new MinHeap<GridNode>();
+            _ready = new Queue<GridNode>();
             _grid = grid;
             _visited = new bool[Height, Width];
             _remaining = Height * Width;
-            _blockRemainingCount = new int[BlockHeight, BlockWidth];
-            _blockVisited = new bool[BlockHeight, BlockWidth];
 
             for (int i = 0; i < Height; i++)
             {
                 for (int j = 0; j < Width; j++)
                 {
                     if (_grid[i, j] == null) throw new ArgumentNullException("All grid values must be set");
-                    _blockRemainingCount[i / BlockSize, j / BlockSize]++;
                 }
             }
+
+            _gridNeighbors = GridNeighbor.GetAll(neighborRadius);
         }
 
         public void Lock(int i, int j)
         {
             GridNode node = new GridNode(i, j, _grid[i, j]);
-            if (_isVisited(node)) return;
+            if (_visited[node.I, node.J]) return;
             _iterate(node);
+        }
+
+        public bool GetReady(out int i, out int j, out GridValue value)
+        {
+            if (_ready.Count == 0)
+            {
+                i = -1;
+                j = -1;
+                value = default(GridValue);
+                return false;
+            }
+            GridNode node = _ready.Dequeue();
+            i = node.I;
+            j = node.J;
+            value = node.Value;
+            return true;
         }
 
         public GridValue Get(int i, int j)
@@ -107,32 +121,9 @@ namespace TerrainCalculator.Grid
             return false;
         }
 
-        public bool GetBlockReady(out int minI, out int minJ, out int maxI, out int maxJ)
-        {
-            for (int bi = 0; bi < BlockHeight; bi++)
-            {
-                for (int bj = 0; bj < BlockWidth; bj++)
-                {
-                    if (_blockVisited[bi, bj]) continue;
-                    if (_blockRemainingCount[bi, bj] > 0) continue;
-                    minI = bi * BlockSize;
-                    maxI = Math.Min((bi + 1) * BlockSize, Height);
-                    minJ = bj * BlockSize;
-                    maxJ = Math.Min((bj + 1) * BlockSize, Width);
-                    _blockVisited[bi, bj] = true;
-                    return true;
-                }
-            }
-            minI = -1;
-            minJ = -1;
-            maxI = -1;
-            maxJ = -1;
-            return false;
-        }
-
         private void _iterate(GridNode node)
         {
-            if (_isVisited(node)) return;
+            if (_visited[node.I, node.J]) return;
             _visit(node);
             foreach (GridNode neighbor in _getNeighbors(node))
             {
@@ -142,24 +133,17 @@ namespace TerrainCalculator.Grid
 
         private IEnumerable<GridNode> _getNeighbors(GridNode node)
         {
-            int low = Mathf.FloorToInt(-NeighborRadius);
-            int high = Mathf.CeilToInt(NeighborRadius);
-            for (int di = low; di <= high; di++)
+            foreach (var neighbor in _gridNeighbors)
             {
-                for (int dj = low; dj <= high; dj++)
-                {
-                    if (di == 0 && dj == 0) continue;
-                    int i = node.I + di;
-                    int j = node.J + dj;
-                    if (!_inBounds(i, j)) continue;
-                    float distance = Mathf.Sqrt(di * di + dj * dj);
-                    if (distance > NeighborRadius) continue;
-                    GridValue otherValue = _grid[i, j];
-                    GridValue nextValue = otherValue.NextValue(node.Value, distance);
-                    GridNode nextNode = new GridNode(
-                        node.I + di, node.J + dj, nextValue);
-                    yield return nextNode;
-                }
+                int i = node.I + neighbor.I;
+                int j = node.J + neighbor.J;
+                if (!_inBounds(i, j)) continue;
+                if (_visited[i, j]) continue;
+                GridValue otherValue = _grid[i, j];
+                GridValue nextValue = otherValue.NextValue(node.Value, neighbor.Distance);
+                GridNode nextNode = new GridNode(i, j, nextValue);
+                yield return nextNode;
+
             }
         }
 
@@ -171,15 +155,13 @@ namespace TerrainCalculator.Grid
                    j < Width;
         }
 
-        private bool _isVisited(GridNode node) => _visited[node.I, node.J];
-
         private void _visit(GridNode node)
         {
             if (_visited[node.I, node.J]) return;
             _grid[node.I, node.J] = node.Value;
             _visited[node.I, node.J] = true;
+            _ready.Enqueue(node);
             _remaining--;
-            _blockRemainingCount[node.I / BlockSize, node.J / BlockSize]--;
         }
     }
 }

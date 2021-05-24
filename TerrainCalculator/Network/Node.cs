@@ -64,9 +64,9 @@ namespace TerrainCalculator.Network
         public void SetDefault()
         {
             Elevation.SetFixed(40);
-            ShoreWidth.SetFixed(48);
-            ShoreDepth.SetFixed(16);
-            RiverWidth.SetFixed(16);
+            ShoreWidth.SetFixed(64);
+            ShoreDepth.SetFixed(32);
+            RiverWidth.SetFixed(64);
             RiverSlope.SetFixed(2);
         }
 
