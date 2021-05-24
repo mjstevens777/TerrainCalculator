@@ -50,11 +50,6 @@
     <Compile Include="TranslationFramework\TranslatableAttribute.cs" />
     <Compile Include="TranslationFramework\Translation.cs" />
     <Compile Include="TranslationFramework\Util.cs" />
-    <Compile Include="ResourceBrushDefault.cs" />
-    <Compile Include="Node.cs" />
-    <Compile Include="Menu.cs" />
-    <Compile Include="Tool.cs" />
-    <Compile Include="TerrainExtension.cs" />
     <Compile Include="Network\Network.cs" />
     <Compile Include="Network\River.cs" />
     <Compile Include="Network\Lake.cs" />
