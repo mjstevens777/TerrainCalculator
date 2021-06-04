@@ -22,11 +22,11 @@ namespace TerrainCalculator.CitiesUI
             panel.name = "TCNodePanel";
             //Util.DebugComponent(panel);
 
-            _buildRow(panel, state, Network.Node.Key.RiverSlope);
-            _buildRow(panel, state, Network.Node.Key.RiverWidth);
-            _buildRow(panel, state, Network.Node.Key.ShoreDepth);
-            _buildRow(panel, state, Network.Node.Key.ShoreWidth);
-            _buildRow(panel, state, Network.Node.Key.Elevation);
+            _buildRow(panel, state, Network.Node.Key.RiverSlope, 1, 5, 1);
+            _buildRow(panel, state, Network.Node.Key.RiverWidth, 32, 512, 2);
+            _buildRow(panel, state, Network.Node.Key.ShoreDepth, 0, 80, 1);
+            _buildRow(panel, state, Network.Node.Key.ShoreWidth, 32, 512, 2);
+            _buildRow(panel, state, Network.Node.Key.Elevation, 40, 1024, 3);
 
             var doneButton = DefaultButton.Build(panel, "TCNodeDoneButton", _done, state.OnNodeDone);
             var deleteButton = DefaultButton.Build(panel, "TCNodeDeleteButton", _delete, state.OnNodeDelete);
@@ -40,39 +40,99 @@ namespace TerrainCalculator.CitiesUI
             return panel;
         }
 
-        private static UIPanel _buildRow(UIPanel parent, State state, TerrainCalculator.Network.Node.Key key)
+        private static void _buildRow(UIPanel parent, State state, TerrainCalculator.Network.Node.Key key,
+                                         float min, float max, float gamma)
         {
-            var row = parent.AddUIComponent<UIPanel>() as UIPanel;
             int horizontalPadding = parent.padding.horizontal + parent.autoLayoutPadding.horizontal;
-            row.width = parent.width - horizontalPadding;
-            row.height = 17;
+            string label = key.ToString();
 
-            var slider = row.AddUIComponent<UISlider>() as UISlider;
-            slider.size = row.size;
+            var textRow = parent.AddUIComponent<UIPanel>();
+            textRow.name = $"TCNodeText{label}";
+            textRow.height = 20;
+            textRow.width = parent.width - horizontalPadding;
+
+            var lockCheck = textRow.AddUIComponent<UICheckBox>();
+            lockCheck.name = $"TCLock{label}";
+            lockCheck.height = textRow.height;
+            lockCheck.width = textRow.height;
+            lockCheck.relativePosition = new Vector3(textRow.width - lockCheck.width, 0, 0);
+
+            var lockBg = lockCheck.AddUIComponent<UISprite>();
+            lockBg.spriteName = "check-unchecked";
+            lockBg.size = lockCheck.size;
+            lockBg.relativePosition = Vector3.zero;
+
+            var lockFg = lockCheck.AddUIComponent<UISprite>();
+            lockFg.spriteName = "LockIcon";
+            lockFg.size = lockCheck.size - new Vector2(4, 4);
+            lockFg.relativePosition = new Vector3(2, 2);
+
+            lockCheck.checkedBoxObject = lockFg;
+
+            var textInput = textRow.AddUIComponent<UITextField>();
+            textInput.height = 16;
+            textInput.width = 60;
+            textInput.normalBgSprite = "TextFieldPanel";
+            textInput.selectionSprite = "EmptySprite";
+            textInput.color = new Color32(72, 72, 72, 255);
+            textInput.builtinKeyNavigation = true;
+            textInput.relativePosition = new Vector3(
+                lockCheck.relativePosition.x - horizontalPadding - textInput.width, 0);
+
+            var title = textRow.AddUIComponent<UILabel>();
+            title.text = Mod.translation.GetTranslation($"TC_NODE_{label.ToUpper()}");
+            title.height = 16;
+            title.width = textInput.relativePosition.x - horizontalPadding;
+            title.relativePosition = Vector3.zero;
+
+            var sliderRow = parent.AddUIComponent<UIPanel>();
+            sliderRow.name = $"TCNodeSlider{label}";
+            sliderRow.width = parent.width - horizontalPadding;
+            sliderRow.height = 17;
+
+            var slider = sliderRow.AddUIComponent<UISlider>();
+            slider.width = sliderRow.width;
+            slider.height = 12;
             slider.relativePosition = Vector3.zero;
             slider.minValue = 0;
-            slider.maxValue = 10;
-            slider.backgroundSprite = "OptionsScrollbarTrack";
+            slider.maxValue = 100;
+            slider.backgroundSprite = "ScrollbarTrack";
 
-            UISprite thumb = slider.AddUIComponent<UISprite>() as UISprite;
-            thumb.width = 16;
-            thumb.height = 16;
-            thumb.spriteName = "OptionsScrollbarThumb";
+            UISlicedSprite thumb = slider.AddUIComponent<UISlicedSprite>();
+            thumb.width = 10;
+            thumb.height = 20;
+            thumb.spriteName = "ScrollbarThumb";
             slider.thumbObject = thumb;
+
+            textInput.eventTextSubmitted += (UIComponent c, string text) =>
+            {
+                try { 
+                    float value = float.Parse(text);
+                    if (float.IsNaN(value)) throw new FormatException("NaN not allowed");
+                    if (float.IsInfinity(value)) throw new FormatException("Inf not allowed");
+                    value = Mathf.Clamp(value, min, max);
+                    textInput.text = Mathf.RoundToInt(value).ToString();
+                    state.OnNodeValueSet(key, value);
+                    return;
+                } catch (FormatException) { }
+                textInput.text = "NaN";
+            };
 
             slider.eventValueChanged += (UIComponent c, float value) =>
             {
+                value = value / 100f;
+                value = Mathf.Pow(value, gamma);
+                value = min + (max - min) * value;
                 state.OnNodeValueSet(key, value);
+                textInput.text = Mathf.RoundToInt(value).ToString();
             };
 
             //state.eventImplicitValuesChanged += (Network.Node node) =>
             //{
+            //    lockCheck.isChecked = node.ImplicitValues[key].IsFixed;
             //    slider.value = (float)(node.ImplicitValues[key].Value);
             //    Debug.Log($"Updating UI to match {key.ToString()} = {slider.value}");
             //};
-
-            return row;
-
         }
 
         private static void _valueHandler(UIComponent component, UIButton.ButtonState value)

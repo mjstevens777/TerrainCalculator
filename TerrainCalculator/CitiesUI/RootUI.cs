@@ -15,7 +15,7 @@ namespace TerrainCalculator.CitiesUI
     public class RootUI
     {
         private static string _title => Mod.translation.GetTranslation("TC_NAME");
-        private const float _width = 215f;
+        private const float _width = 300f;
         private const float _right = 200f;
         private const float _top = 40f;
         private const float _titleHeight = 40f;

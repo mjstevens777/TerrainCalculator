@@ -10,5 +10,11 @@
     <Translation ID="TC_NEW_RIVER" String="New River" />
     <Translation ID="TC_DELETE" String="Delete" />
     <Translation ID="TC_DONE" String="Done" />
+    <!-- NODE -->
+    <Translation ID="TC_NODE_RIVERSLOPE" String="River Slope (°)" />
+    <Translation ID="TC_NODE_RIVERWIDTH" String="River Width (m)" />
+    <Translation ID="TC_NODE_SHOREDEPTH" String="Shore Depth (m)" />
+    <Translation ID="TC_NODE_SHOREWIDTH" String="Shore Width (m)" />
+    <Translation ID="TC_NODE_ELEVATION" String="Elevation (m)" />
   </Translations>
 </Language>

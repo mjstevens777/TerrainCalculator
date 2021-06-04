@@ -19,6 +19,8 @@ namespace TerrainCalculator.UnityUI
         private List<GameObject> _primitives;
         private Material _nodeBaseMaterial;
         private Material _nodeHighlightMaterial;
+        private Material _nodeElevationFixedMaterial;
+        private Material _nodeFixedMaterial;
 
         public void Start()
         {
@@ -33,6 +35,12 @@ namespace TerrainCalculator.UnityUI
 
             _nodeHighlightMaterial = new Material(Shader.Find("Custom/Props/Prop/Default"));
             _nodeHighlightMaterial.color = new Color(1, 1, 0, 1);
+
+            _nodeElevationFixedMaterial = new Material(Shader.Find("Custom/Props/Prop/Default"));
+            _nodeElevationFixedMaterial.color = new Color(1, 0, 0, 1);
+
+            _nodeFixedMaterial = new Material(Shader.Find("Custom/Props/Prop/Default"));
+            _nodeFixedMaterial.color = new Color(0, 0.7f, 0, 1);
         }
 
         public void Update()
@@ -145,8 +153,20 @@ namespace TerrainCalculator.UnityUI
         {
             Node node = primitive.GetComponent<NodeContainer>().Node;
             primitive.SetActive(node != HideNode);
-            var material = node == HighlightNode ? _nodeHighlightMaterial : _nodeBaseMaterial;
-            primitive.GetComponent<Renderer>().material = material;
+            Renderer renderer = primitive.GetComponent<Renderer>();
+            if (node == HighlightNode)
+            {
+                renderer.material = _nodeHighlightMaterial;
+            } else if (node.Elevation.IsFixed)
+            {
+                renderer.material = _nodeElevationFixedMaterial;
+            } else if (node.AnyValueFixed)
+            {
+                renderer.material = _nodeFixedMaterial;
+            } else
+            {
+                renderer.material = _nodeBaseMaterial;
+            }
         }
     }
 }

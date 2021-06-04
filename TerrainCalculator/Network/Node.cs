@@ -61,6 +61,17 @@ namespace TerrainCalculator.Network
             get => ImplicitValues[Key.RiverSlope];
         }
 
+        public bool AnyValueFixed
+        {
+            get {
+                foreach(FlagDouble value in ImplicitValues.Values)
+                {
+                    if (value.IsFixed) return true;
+                }
+                return false;
+            }
+        }
+
         public void SetDefault()
         {
             Elevation.SetFixed(40);
